@@ -41,7 +41,7 @@ const PlayoffsBreakdown = ({
             const className = players_eliminated.includes(player_id) || !players_left.includes(player_id) ? 'red' : ''
             return {
                 id: player_id,
-                list: [[
+                list: [
                     {
                         text: stateWeek.length === 1 ? total_optimal[player_id].slot : allplayers[player_id]?.position,
                         colSpan: 1,
@@ -57,7 +57,7 @@ const PlayoffsBreakdown = ({
                         colSpan: 2,
                         className: className
                     }
-                ]]
+                ]
             }
         })
 

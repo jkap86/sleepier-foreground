@@ -76,7 +76,7 @@ const Leaguemates = ({
                         type: 'user'
                     }
                 },
-                list: [[
+                list: [
                     {
                         text: lm.username || 'Orphan',
                         colSpan: 3,
@@ -145,7 +145,7 @@ const Leaguemates = ({
                         colSpan: 2,
                         className: "green"
                     }
-                ]],
+                ],
                 secondary_table: (
                     <LeaguemateLeagues
                         stateAllPlayers={stateAllPlayers}

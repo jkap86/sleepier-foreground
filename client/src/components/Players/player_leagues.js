@@ -35,7 +35,7 @@ const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
     const player_leagues_body = leagues_display.map(lo => {
         return {
             id: lo.league_id,
-            list: [[
+            list: [
                 {
                     text: lo.name,
                     colSpan: 3,
@@ -68,7 +68,7 @@ const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
                     {
                         colSpan: 0
                     }
-            ]]
+            ]
         }
     })
 

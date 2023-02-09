@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { avatar } from '../Functions/misc';
 import tumbleweedgif from '../../images/tumbleweed.gif';
 import Search from './search';
 
-const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItemActive, caption, search, searched, setSearched, options }) => {
+const TableTrades = ({ id, type, headers, body, page, setPage, itemActive, setItemActive, caption, search, searched, setSearched, options }) => {
 
     const body_filtered = searched === '' || !searched ?
         body
@@ -55,7 +55,7 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
         }
 
 
-        <table className={type}>
+        <table id={id} className={type}>
             {
                 caption ?
                     <caption>
@@ -103,59 +103,66 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
                     body_filtered
                         ?.slice(Math.max(((page || 1) - 1) * 25, 0), (((page || 1) - 1) * 25) + 25)
                         ?.map((item, index) =>
-                            <tbody key={index}
-                                className={itemActive === item.id ? 'active' : ''}
-                            >
-                                <tr className={`${type}_wrapper ${itemActive === item.id ? 'active' : ''}`}>
-                                    <td
-                                        colSpan={item.list.reduce((acc, cur) => acc + (cur.colSpan || 0), 0)}
-                                    >
-                                        <table className={`${type}_body`}>
-                                            <tbody>
-                                                <tr
-                                                    className={`${type} click ${itemActive === item.id ? 'active' : ''}`}
-                                                    onClick={setItemActive ? () => setItemActive(prevState => prevState === item.id ? '' : item.id) : null}
+                            <React.Fragment key={item.id}>
+                                <tbody
+                                    className={itemActive === item.id ? 'active trade_row' : 'trade_row'}
+                                >
+                                    {
+                                        item.list.map((list_item, index) =>
+                                            <tr className={`${type}_wrapper ${itemActive === item.id ? 'active' : ''}`}>
+                                                <td
+                                                    colSpan={list_item.reduce((acc, cur) => acc + (cur.colSpan || 0), 0)}
                                                 >
-                                                    {
-                                                        item.list
-                                                            .filter(x => x.text)
-                                                            .map((key, index) =>
-                                                                <td
-                                                                    key={index}
-                                                                    colSpan={key.colSpan}
-                                                                    className={key.className}
-                                                                >
-                                                                    {
-                                                                        key.image ?
-                                                                            <p>
+                                                    <table className={`${type}_body`}>
+                                                        <tbody>
+                                                            <tr
+                                                                className={`${type} click ${itemActive === item.id ? 'active' : ''}`}
+                                                                onClick={setItemActive ? () => setItemActive(prevState => prevState === item.id ? '' : item.id) : null}
+                                                            >
+                                                                {
+                                                                    list_item
+                                                                        .filter(x => x.text)
+                                                                        .map((key, index) =>
+                                                                            <td
+                                                                                key={index}
+                                                                                colSpan={key.colSpan}
+                                                                                className={key.className}
+                                                                            >
                                                                                 {
-                                                                                    avatar(
-                                                                                        key.image.src, key.image.alt, key.image.type
-                                                                                    )
+                                                                                    key.image ?
+                                                                                        <p>
+                                                                                            {
+                                                                                                avatar(
+                                                                                                    key.image.src, key.image.alt, key.image.type
+                                                                                                )
+                                                                                            }
+                                                                                            {key.text}
+                                                                                        </p>
+                                                                                        :
+                                                                                        key.text
                                                                                 }
-                                                                                {key.text}
-                                                                            </p>
-                                                                            :
-                                                                            key.text
-                                                                    }
-                                                                </td>
-                                                            )
-                                                    }
-                                                </tr>
-                                                {
-                                                    (itemActive !== item.id || !item.secondary_table) ? null :
-                                                        <tr className={`${type}2 click ${itemActive === item.id ? 'active' : ''}`}
-                                                        >
-                                                            <td colSpan={item.list.reduce((acc, cur) => acc + cur.colSpan, 0)}>
-                                                                {item.secondary_table}
-                                                            </td>
-                                                        </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
+                                                                            </td>
+                                                                        )
+                                                                }
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }
+                                    {
+                                        (itemActive !== item.id || !item.secondary_table) ? null :
+                                            <tr className={`${type}2 click ${itemActive === item.id ? 'active' : ''}`}
+                                            >
+                                                <td colSpan={item.list[0].reduce((acc, cur) => acc + cur.colSpan, 0)}>
+                                                    {item.secondary_table}
+                                                </td>
+                                            </tr>
+                                    }
+                                </tbody>
+                            </React.Fragment>
                         )
                     :
                     <tbody>
@@ -187,4 +194,4 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
     </>
 }
 
-export default TableMain;
+export default TableTrades;

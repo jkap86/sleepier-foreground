@@ -200,91 +200,6 @@ const Playoffs = () => {
         setOptimalLineups(optimalLineups_all)
     }, [league, scoring])
 
-    /*
-        const summary_body = league.rosters
-            ?.sort((a, b) => b.players.reduce((acc, cur) => acc + parseFloat(getPlayerScore(cur)), 0) - a.players.reduce((acc, cur) => acc + parseFloat(getPlayerScore(cur)), 0))
-            ?.map(roster => {
-                const secondary_body = roster.players
-                    ?.sort((a, b) => parseFloat(getPlayerScore(b)) - parseFloat(getPlayerScore(a)))
-                    ?.map(player_id => {
-                        const breakdown = getPlayerBreakdown(player_id) || {}
-                        const tertiary_body = Object.keys(breakdown || {})
-                            ?.map(key => {
-                                return {
-                                    id: key,
-                                    list: [
-                                        {
-                                            text: key,
-                                            colSpan: 5
-                                        },
-                                        {
-                                            text: breakdown[key].toFixed(2),
-                                            colSpan: 2
-                                        }
-                                    ]
-                                }
-                            })
-    
-                        return {
-                            id: player_id,
-                            list: [
-                                {
-                                    text: allplayers[player_id]?.full_name,
-                                    colSpan: 5
-                                },
-                                {
-                                    text: getPlayerScore(player_id),
-                                    colSpan: 2
-                                }
-                            ],
-                            secondary_table: (
-                                <TableMain
-                                    type={'tertiary'}
-                                    headers={tertiary_headers}
-                                    body={tertiary_body}
-                                />
-                            )
-                        }
-                    })
-    
-                return {
-                    id: roster.roster_id,
-                    list: [
-                        {
-                            text: league.users.find(u => u.user_id === roster.owner_id)?.display_name || '-',
-                            colSpan: 5
-                        },
-                        {
-                            text: roster.players.reduce((acc, cur) => acc + parseFloat(getPlayerScore(cur)), 0).toFixed(2) || '0.00',
-                            colSpan: 2
-                        }
-                    ],
-                    secondary_table: (
-                        <>
-                            <div className="secondary nav">
-                                {
-                                    Array.from(new Set(roster.players.map(player_id => allplayers[player_id]?.team)))
-                                        .sort((a, b) => roster.players.filter(player_id => allplayers[player_id]?.team === b).length - roster.players.filter(player_id => allplayers[player_id]?.team === a).length)
-                                        .map(team =>
-                                            <button className="active small">
-                                                {team}: {roster.players.filter(player_id => allplayers[player_id]?.team === team).length}
-                                            </button>
-                                        )
-                                }
-                            </div>
-                            <TableMain
-                                type={'secondary'}
-                                headers={secondary_headers}
-                                body={secondary_body}
-                                itemActive={playerActive}
-                                setItemActive={setPlayerActive}
-                            />
-                        </>
-                    )
-                }
-            })
-    */
-
     const getRosterTotal = (optimal_lineup) => {
         let team_total = 0;
         stateWeek
@@ -355,7 +270,7 @@ const Playoffs = () => {
 
             return {
                 id: user_id,
-                list: [[
+                list: [
                     {
                         text: league.users.find(u => u.user_id === user_id)?.display_name || '-',
                         colSpan: 3,
@@ -384,7 +299,7 @@ const Playoffs = () => {
                         text: (players_left.length - players_eliminated.length).toString(),
                         colSpan: 2
                     }
-                ]],
+                ],
                 secondary_table: (
                     <PlayoffsBreakdown
                         total_optimal={total_optimal}

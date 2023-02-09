@@ -40,7 +40,7 @@ const Leagues = ({
                     type: 'league'
                 }
             },
-            list: [[
+            list: [
                 {
                     text: league.name,
                     colSpan: 4,
@@ -71,7 +71,7 @@ const Leagues = ({
                         league.userRoster.rank / league.rosters.length >= .75 ? 'red' :
                             null
                 }
-            ]],
+            ],
             secondary_table: (
                 <LeagueInfo
                     league={league}

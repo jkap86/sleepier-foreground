@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import TableMain from "../Home/tableMain";
+import TableTrades from "../Home/tableTrades";
 import Search from "../Home/search";
 import TradeTargets from "./tradeTargets";
 
@@ -273,7 +273,7 @@ const Trades = ({
             }
 
         </div>
-        <TableMain
+        <TableTrades
             id={'trades'}
             type={'main'}
             headers={trades_headers}
