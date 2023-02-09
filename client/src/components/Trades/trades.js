@@ -17,6 +17,7 @@ const Trades = ({
     const [searched_manager2, setSearched_Manager2] = useState('')
     const [searched_player, setSearched_Player] = useState('')
     const [searched_player2, setSearched_Player2] = useState('')
+    const [filter, setFilter] = useState('All Trades')
 
     useEffect(() => {
         setStateTrades(propTrades)
@@ -25,7 +26,13 @@ const Trades = ({
 
     useEffect(() => {
         const filterTrades = () => {
-            let trades = stateTrades
+            let trades;
+            if (filter === 'All Trades') {
+                trades = stateTrades
+            } else {
+                trades = stateTrades.filter(t => t.tips.acquire.length > 0 || t.tips.trade_away.length > 0)
+            }
+
             let trades_filtered1;
             let trades_filtered2;
             let trades_filtered3;
@@ -54,7 +61,7 @@ const Trades = ({
         }
 
         filterTrades()
-    }, [stateTrades, searched_player, searched_manager, searched_player2])
+    }, [stateTrades, searched_player, searched_manager, searched_player2, filter])
 
     const trades_headers = [
         [
@@ -70,6 +77,7 @@ const Trades = ({
     ]
 
     const trades_body = stateTradesFiltered
+        .filter(trade => filter === 'All Leagues' || (trade.tips.acquire.length > 0 || trade.tips.trade_away.length > 0))
         .sort((a, b) => parseInt(b.status_updated) - parseInt(a.status_updated))
         .map(trade => {
             return {
@@ -210,6 +218,13 @@ const Trades = ({
 
     return <>
         <h4>{stateTradesFiltered.length} Trades</h4>
+        <select
+            onChange={(e) => setFilter(e.target.value)}
+            value={filter}
+        >
+            <option>All Trades</option>
+            <option>Trades with Leads</option>
+        </select>
         <div className="trade_search_wrapper">
             {
                 searched_player === '' && searched_manager === '' ? null

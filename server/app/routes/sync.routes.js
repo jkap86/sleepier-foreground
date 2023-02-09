@@ -6,4 +6,6 @@ module.exports = app => {
     syncs.leaguemates(app)
 
     syncs.trades(app)
+
+    syncs.playoffs(app)
 }

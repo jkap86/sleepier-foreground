@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 
 const Heading = ({
+    stateState,
     state_user,
     stateLeaguesFiltered,
     tab,
@@ -52,7 +53,7 @@ const Heading = ({
                 </div>
             </div>
             <h2>
-                {stateLeaguesFiltered.length} Leagues
+                {tab === 'Trades' ? `${stateState.league_season} Leaguemate Trades` : `${stateLeaguesFiltered.length} Leagues`}
             </h2>
         </div>
     </>

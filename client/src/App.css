@@ -346,6 +346,14 @@ div.heading img {
   margin: auto;
 }
 
+select {
+  background-color: inherit;
+  color: var(--color2);
+  font-family: inherit;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
 div.navbar,
 div.switch_wrapper {
   display: flex;
@@ -491,7 +499,8 @@ tr.main2.active {
   border: .25rem ridge var(--color2);
 }
 
-tr.main.active {
+tr.main.active,
+tbody.active.trade_row {
   background-color: var(--color3);
   position: sticky;
   top: 4.75rem;

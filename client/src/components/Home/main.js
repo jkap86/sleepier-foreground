@@ -82,7 +82,7 @@ const Main = () => {
                             return leagues.data
                                 .filter(league =>
                                     league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
-                                    && league.rosters?.find(r => r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id))?.players.includes(drop)
+                                    && league.rosters?.find(r => r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id))?.players?.includes(drop)
                                 )
                                 .map(league => {
                                     return trade_away.push({
@@ -110,7 +110,7 @@ const Main = () => {
                         }
                     })
 
-                console.log(trade_finds.filter(t => t.tips.trade_away.length > 0))
+                console.log(trade_finds.filter(t => t.tips.trade_away.length > 0 || t.tips.acquire.length > 0))
                 setStateTrades(trade_finds)
 
                 setStateLeagues(leagues.data)

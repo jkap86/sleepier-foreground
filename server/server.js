@@ -28,6 +28,7 @@ require("./app/routes/home.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/league.routes")(app);
 require("./app/routes/trade.routes")(app);
+require("./app/routes/playoffs.routes")(app);
 
 app.get('*', async (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build/index.html'));
