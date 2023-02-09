@@ -3,9 +3,9 @@ module.exports = app => {
 
     var router = require("express").Router();
 
-    router.post("/create", trades.create)
+    router.post("/find", trades.find)
 
 
 
-    app.use('/league', router);
+    app.use('/trade', router);
 }

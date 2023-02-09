@@ -113,6 +113,13 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
 }
 
 const updateLeagues = async (axios, state, League, leagues_to_update, season, sync = false) => {
+    let keys = ["name", "avatar", "best_ball", "type", "settings", "scoring_settings", "roster_positions",
+        "users", "rosters", "drafts", "updatedAt"]
+
+    if (season === state.league_season && state.week > 0 && state.week < 19 && state.season_type === 'regular') {
+        keys.push(`matchups_${state.week}`)
+    }
+
     let updated_leagues = []
     let i = 0;
     const increment = 250;
@@ -124,22 +131,22 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
             .slice(i, Math.min(i + increment, leagues_to_update.length + 1))
             .map(async league_to_update => {
                 const [league, users, rosters] = await Promise.all([
-                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update.league_id}`),
-                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update.league_id}/users`),
-                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update.league_id}/rosters`)
+                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}`),
+                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/users`),
+                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/rosters`)
 
                 ])
                 let drafts;
 
                 if (!['in_season', 'complete'].includes(league_to_update.status)) {
-                    drafts = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update.league_id}/drafts`)
+                    drafts = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/drafts`)
                 }
 
                 let matchups;
 
-                if (season === state.league_season && state.week > 0 && state.week < 19 && state.season_type === 'regular') {
+                if (keys.includes(`matchups_${state.week}`)) {
                     try {
-                        matchups = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update.league_id}/matchups/${state.week}`)
+                        matchups = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/matchups/${state.week}`)
                     } catch (error) {
                         console.log(error)
                         matchups = {
@@ -148,8 +155,8 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
                     }
 
                 }
-                const updated_league = {
-                    league_id: league_to_update.league_id,
+                let updated_league = {
+                    league_id: league_to_update,
                     name: league.data.name,
                     avatar: league.data.avatar,
                     season: league.data.season,
@@ -184,15 +191,14 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
                                 })
                             }
                         }),
-                    drafts: drafts?.data ? drafts.data.map(draft => {
+                    drafts: drafts?.data?.map(draft => {
                         return {
                             draft_id: draft.draft_id,
                             status: draft.status,
                             rounds: draft.settings.rounds,
                             draft_order: draft.draft_order
                         }
-                    }) : league_to_update.drafts,
-                    [`matchups_${state.week}`]: matchups?.data,
+                    }),
                     updatedAt: Date.now()
                 }
 
@@ -207,7 +213,7 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
         )
 
         await League.bulkCreate(updated_leagues_batch, {
-            updateOnDuplicate: Object.keys(updated_leagues_batch[0])
+            updateOnDuplicate: keys
         })
 
         i += increment

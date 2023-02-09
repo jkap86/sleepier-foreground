@@ -1,32 +1,17 @@
 import './App.css';
-import { useState } from 'react';
-import axios from 'axios';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Homepage from './components/Home/homepage';
+import Main from './components/Home/main';
 
 function App() {
-  const [username, setUsername] = useState('')
-  const [season, setSeason] = useState('')
-
-
-  const search = async () => {
-    const data = await axios.post('/user/create', {
-      username: username
-    })
-    if (data.data?.error) {
-      console.log('ERROR!!!')
-    } else {
-      const leagues = await axios.post('/league/create', {
-        user_id: data.data[0]?.user_id.toString(),
-        season: season
-      })
-      console.log(leagues.data)
-    }
-  }
-
   return (
     <div className="App">
-      <input onBlur={(e) => setUsername(e.target.value)} />
-      <input onBlur={(e) => setSeason(e.target.value)} />
-      <button type='submit' onClick={() => search()}>Submit</button>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Homepage />} />
+          <Route path='/:username/:season' element={<Main />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

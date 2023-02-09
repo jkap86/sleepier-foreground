@@ -22,7 +22,9 @@ db.sequelize.sync()
         console.log("Failed to sync db: " + err.message);
     })
 
+
 require("./app/routes/sync.routes")(app);
+require("./app/routes/home.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/league.routes")(app);
 require("./app/routes/trade.routes")(app);

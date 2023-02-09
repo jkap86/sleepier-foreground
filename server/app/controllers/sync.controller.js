@@ -13,6 +13,7 @@ const axios = require('axios').create({
 });
 const axiosRetry = require('axios-retry');
 const { addNewLeagues, updateLeagues } = require('../helpers/addNewLeagues');
+const { getAllPlayers } = require('../helpers/getAllPlayers');
 
 axiosRetry(axios, {
     retries: 3,
@@ -28,12 +29,42 @@ axiosRetry(axios, {
 
 
 exports.boot = async (app) => {
+    const date = new Date()
+    const tzOffset = date.getTimezoneOffset()
+    const tzOffset_ms = tzOffset * 60 * 1000
+    const date_tz = new Date(date + tzOffset_ms)
+    const hour = date_tz.getHours()
+    const minute = date_tz.getMinutes()
+
+    let delay;
+    if (hour < 3) {
+        delay = (((3 - hour) * 60) + (60 - minute)) * 60 * 1000
+    } else {
+        delay = (((27 - hour) * 60) + (60 - minute)) * 60 * 1000
+    }
+
     const state = await axios.get('https://api.sleeper.app/v1/state/nfl')
     app.set('state', state.data)
+
+    const allplayers = await getAllPlayers(axios, state.data)
+    app.set('allplayers', allplayers)
 
     app.set('leaguemate_leagues', [])
     app.set('leaguemates', [])
     app.set('trades_sync_counter', 0)
+
+    setTimeout(async () => {
+        setInterval(async () => {
+
+            const state = await axios.get('https://api.sleeper.app/v1/state/nfl')
+            app.set('state', state.data)
+
+            const allplayers = await getAllPlayers(axios, state.data)
+            app.set('allplayers', allplayers)
+
+        }, 24 * 60 * 60 * 1 * 1000)
+    }, delay)
+
     console.log('Server Boot Complete...')
     return
 }
@@ -104,7 +135,7 @@ const updateLeaguemates = async (app) => {
 const updateLeaguemateLeagues = async (app) => {
     console.log(`Begin Leaguemate Leagues Sync at ${new Date()}`)
     const state = app.get('state')
-    const cutoff = new Date(new Date() - (1 * 60 * 1000))
+    const cutoff = new Date(new Date() - (1 * 24 * 60 * 60 * 1000))
 
     const league_ids = app.get('leaguemate_leagues')
 
@@ -118,7 +149,7 @@ const updateLeaguemateLeagues = async (app) => {
 
     leagues_user_db = leagues_user_db.map(league => league.dataValues)
 
-    const leagues_to_update = leagues_user_db.filter(l_db => l_db.updatedAt < cutoff)
+    const leagues_to_update = leagues_user_db.filter(l_db => l_db.updatedAt < cutoff).map(league => league.league_id)
     const new_leagues = league_ids
         .filter(l => !leagues_user_db.find(l_db => l_db.league_id === l))
 

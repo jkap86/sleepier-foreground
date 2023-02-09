@@ -10,7 +10,24 @@ const axios = require('axios').create({
 });
 
 
-exports.create = async (req, res) => {
+exports.find = async (req, res) => {
+    let conditions = []
 
+    for (let lm of req.body.leaguemate_ids) {
+        conditions.push({
+            [Op.contains]: lm
+        })
+    }
+
+    const trades_db = await Trades.findAll({
+        where: {
+            managers: {
+                [Op.or]: conditions
+            }
+        }
+    })
+
+    res.send(trades_db.map(trade => trade.dataValues))
 }
+
 
