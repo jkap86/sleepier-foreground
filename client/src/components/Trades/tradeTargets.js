@@ -41,7 +41,7 @@ const TradeTargets = ({
                     colSpan: 2
                 },
                 {
-                    text: '- ' + stateAllPlayers[add.player_id]?.full_name,
+                    text: stateAllPlayers[add.player_id]?.full_name,
                     colSpan: 3
                 },
                 {
@@ -87,7 +87,7 @@ const TradeTargets = ({
                     colSpan: 2
                 },
                 {
-                    text: '- ' + stateAllPlayers[add.player_id]?.full_name,
+                    text: stateAllPlayers[add.player_id]?.full_name,
                     colSpan: 3
                 },
                 {

@@ -51,14 +51,15 @@ const Main = () => {
                 const trade_finds = trades.data
                     .map(trade => {
 
-                        let acquire = []
+                        let trade_away = []
+
 
                         Object.keys(trade.adds || {}).map(add => {
                             const lm_user_id = trade.adds[add]
 
                             return leagues.data.filter(league => league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id && league.userRoster.players.includes(add))
                                 .map(league => {
-                                    return acquire.push({
+                                    return trade_away.push({
                                         player_id: add,
                                         manager: {
                                             user_id: lm_user_id,
@@ -74,7 +75,7 @@ const Main = () => {
                                 })
                         })
 
-                        let trade_away = []
+                        let acquire = []
 
                         Object.keys(trade.drops || {}).map(drop => {
                             const lm_user_id = trade.drops[drop]
@@ -85,7 +86,7 @@ const Main = () => {
                                     && league.rosters?.find(r => r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id))?.players?.includes(drop)
                                 )
                                 .map(league => {
-                                    return trade_away.push({
+                                    return acquire.push({
                                         player_id: drop,
                                         manager: {
                                             user_id: lm_user_id,
@@ -110,7 +111,7 @@ const Main = () => {
                         }
                     })
 
-                console.log(trade_finds.filter(t => t.tips.trade_away.length > 0 || t.tips.acquire.length > 0))
+
                 setStateTrades(trade_finds)
 
                 setStateLeagues(leagues.data)

@@ -77,7 +77,6 @@ const Trades = ({
     ]
 
     const trades_body = stateTradesFiltered
-        .filter(trade => filter === 'All Leagues' || (trade.tips.acquire.length > 0 || trade.tips.trade_away.length > 0))
         .sort((a, b) => parseInt(b.status_updated) - parseInt(a.status_updated))
         .map(trade => {
             return {
