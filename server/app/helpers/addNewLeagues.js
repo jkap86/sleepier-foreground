@@ -127,90 +127,94 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
     while (i < leagues_to_update?.length) {
         let updated_leagues_batch = []
 
-        await Promise.all(leagues_to_update
-            .slice(i, Math.min(i + increment, leagues_to_update.length + 1))
-            .map(async league_to_update => {
-                const [league, users, rosters] = await Promise.all([
-                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}`),
-                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/users`),
-                    await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/rosters`)
+        try {
+            await Promise.all(leagues_to_update
+                .slice(i, Math.min(i + increment, leagues_to_update.length + 1))
+                .map(async league_to_update => {
+                    const [league, users, rosters] = await Promise.all([
+                        await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}`),
+                        await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/users`),
+                        await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/rosters`)
 
-                ])
-                let drafts;
+                    ])
+                    let drafts;
 
-                if (!['in_season', 'complete'].includes(league_to_update.status)) {
-                    drafts = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/drafts`)
-                }
-
-                let matchups;
-
-                if (keys.includes(`matchups_${state.week}`)) {
-                    try {
-                        matchups = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/matchups/${state.week}`)
-                    } catch (error) {
-                        console.log(error)
-                        matchups = {
-                            data: []
-                        }
+                    if (!['in_season', 'complete'].includes(league_to_update.status)) {
+                        drafts = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/drafts`)
                     }
 
-                }
-                let updated_league = {
-                    league_id: league_to_update,
-                    name: league.data.name,
-                    avatar: league.data.avatar,
-                    season: league.data.season,
-                    best_ball: league.data.settings.best_ball,
-                    type: league.data.settings.type,
-                    settings: league.data.settings,
-                    scoring_settings: league.data.scoring_settings,
-                    roster_positions: league.data.roster_positions,
-                    users: users.data.map(user => user.user_id),
-                    rosters: rosters.data
-                        .sort((a, b) => b.settings?.wins - a.settings.wins || b.settings.fpts - a.settings.fpts)
-                        .map((roster, index) => {
-                            const user = users.data.find(u => u.user_id === roster.owner_id)
+                    let matchups;
+
+                    if (keys.includes(`matchups_${state.week}`)) {
+                        try {
+                            matchups = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/matchups/${state.week}`)
+                        } catch (error) {
+                            console.log(error)
+                            matchups = {
+                                data: []
+                            }
+                        }
+
+                    }
+                    let updated_league = {
+                        league_id: league_to_update,
+                        name: league.data.name,
+                        avatar: league.data.avatar,
+                        season: league.data.season,
+                        best_ball: league.data.settings.best_ball,
+                        type: league.data.settings.type,
+                        settings: league.data.settings,
+                        scoring_settings: league.data.scoring_settings,
+                        roster_positions: league.data.roster_positions,
+                        users: users.data.map(user => user.user_id),
+                        rosters: rosters.data
+                            .sort((a, b) => b.settings?.wins - a.settings.wins || b.settings.fpts - a.settings.fpts)
+                            .map((roster, index) => {
+                                const user = users.data.find(u => u.user_id === roster.owner_id)
+                                return {
+                                    rank: index + 1,
+                                    taxi: roster.taxi,
+                                    starters: roster.starters,
+                                    settings: roster.settings,
+                                    roster_id: roster.roster_id,
+                                    reserve: roster.reserve,
+                                    players: roster.players,
+                                    user_id: roster.owner_id,
+                                    username: user?.display_name,
+                                    avatar: user?.avatar,
+                                    co_owners: roster.co_owners?.map(co => {
+                                        const co_user = users.data.find(u => u.user_id === co)
+                                        return {
+                                            user_id: co_user?.user_id,
+                                            username: co_user?.display_name,
+                                            avatar: co_user?.avatar
+                                        }
+                                    })
+                                }
+                            }),
+                        drafts: drafts?.data?.map(draft => {
                             return {
-                                rank: index + 1,
-                                taxi: roster.taxi,
-                                starters: roster.starters,
-                                settings: roster.settings,
-                                roster_id: roster.roster_id,
-                                reserve: roster.reserve,
-                                players: roster.players,
-                                user_id: roster.owner_id,
-                                username: user?.display_name,
-                                avatar: user?.avatar,
-                                co_owners: roster.co_owners?.map(co => {
-                                    const co_user = users.data.find(u => u.user_id === co)
-                                    return {
-                                        user_id: co_user?.user_id,
-                                        username: co_user?.display_name,
-                                        avatar: co_user?.avatar
-                                    }
-                                })
+                                draft_id: draft.draft_id,
+                                status: draft.status,
+                                rounds: draft.settings.rounds,
+                                draft_order: draft.draft_order
                             }
                         }),
-                    drafts: drafts?.data?.map(draft => {
-                        return {
-                            draft_id: draft.draft_id,
-                            status: draft.status,
-                            rounds: draft.settings.rounds,
-                            draft_order: draft.draft_order
-                        }
-                    }),
-                    updatedAt: Date.now()
-                }
+                        updatedAt: Date.now()
+                    }
 
-                updated_leagues_batch.push(updated_league)
+                    updated_leagues_batch.push(updated_league)
 
-                if (!sync) {
-                    updated_leagues.push(updated_league)
-                } else {
-                    updated_leagues.push(updated_league.league_id)
-                }
-            })
-        )
+                    if (!sync) {
+                        updated_leagues.push(updated_league)
+                    } else {
+                        updated_leagues.push(updated_league.league_id)
+                    }
+                })
+            )
+        } catch (error) {
+            console.log(error)
+        }
 
         await League.bulkCreate(updated_leagues_batch, {
             updateOnDuplicate: keys
