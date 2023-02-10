@@ -3,6 +3,7 @@ import { useState } from "react";
 
 const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
     const [tab, setTab] = useState('Owned');
+    const [page, setPage] = useState(1)
 
     const player_leagues_headers = [
         [
@@ -23,7 +24,7 @@ const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
                     className: 'half'
                 }
                 :
-                null
+                ''
         ]
     ]
 
@@ -55,7 +56,7 @@ const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
                 },
                 tab === 'Taken' ?
                     {
-                        text: lo.manager?.username,
+                        text: lo.manager?.username || 'Orphan',
                         colSpan: 2,
                         className: 'left end',
                         image: {
@@ -65,9 +66,7 @@ const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
                         }
                     }
                     :
-                    {
-                        colSpan: 0
-                    }
+                    ''
             ]
         }
     })
@@ -97,6 +96,8 @@ const PlayerLeagues = ({ leagues_owned, leagues_taken, leagues_available }) => {
             type={'secondary'}
             headers={player_leagues_headers}
             body={player_leagues_body}
+            page={page}
+            setPage={setPage}
         />
     </>
 }
