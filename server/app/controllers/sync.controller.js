@@ -254,7 +254,7 @@ const updateLeaguemateLeagues = async (app) => {
     let leagues_user_db = await League.findAll({
         where: {
             league_id: {
-                [Op.in]: league_ids
+                [Op.in]: league_ids || []
             }
         }
     })
