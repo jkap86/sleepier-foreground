@@ -71,6 +71,7 @@ exports.boot = async (app) => {
 }
 
 exports.leaguemates = async (app) => {
+    console.log(`Begin Leaguemates Sync at ${new Date()}`)
     let interval = .5 * 60 * 1000
 
     setTimeout(async () => {
@@ -82,6 +83,7 @@ exports.leaguemates = async (app) => {
             console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
         }
     }, interval)
+    console.log(`Leaguemates Sync completed at ${new Date()}`)
 }
 
 exports.trades = async (app) => {
@@ -212,41 +214,44 @@ const playoffs_scoring = async (app) => {
 
 
 const updateLeaguemates = async (app) => {
-    console.log(`Begin Leaguemates Sync at ${new Date()}`)
     const state = app.get('state')
     const leaguemates = app.get('leaguemates')
-    console.log(`${leaguemates.length} Leaguemates to Update...`)
-    const leaguemates_sorted = leaguemates
-        .sort((a, b) => a.time - b.time)
-        .map(lm => {
-            return {
-                user_id: lm.user_id,
-                username: lm.username,
-                avatar: lm.avatar
-            }
-        })
+    let leaguemates_sorted;
 
-    await User.bulkCreate(leaguemates_sorted, { updateOnDuplicate: ['username', 'avatar'] })
+    if (leaguemates.length > 0) {
+        console.log(`${leaguemates.length} Leaguemates to Update...`)
+        leaguemates_sorted = leaguemates
+            .sort((a, b) => a.time - b.time)
+            .map(lm => {
+                return {
+                    user_id: lm.user_id,
+                    username: lm.username,
+                    avatar: lm.avatar
+                }
+            })
 
-    let leaguemate_leagues = app.get('leaguemate_leagues')
+        await User.bulkCreate(leaguemates_sorted, { updateOnDuplicate: ['username', 'avatar'] })
 
-    await Promise.all(leaguemates_sorted.map(async lm => {
-        const lm_leagues = await axios.get(`http://api.sleeper.app/v1/user/${lm.user_id}/leagues/nfl/${state.league_season}`)
+        app.set('leaguemates', [])
 
-        leaguemate_leagues.push(lm_leagues.data.map(league => league.league_id))
-    }))
+        let leaguemate_leagues = app.get('leaguemate_leagues')
 
-    const leaguemate_leagues_updated = Array.from(new Set(leaguemate_leagues.flat()))
+        await Promise.all(leaguemates_sorted?.map(async lm => {
+            const lm_leagues = await axios.get(`http://api.sleeper.app/v1/user/${lm.user_id}/leagues/nfl/${state.league_season}`)
 
-    app.set('leaguemate_leagues', leaguemate_leagues_updated)
+            leaguemate_leagues.push(lm_leagues.data.map(league => league.league_id))
+        }))
 
-    app.set('leaguemates', [])
+        const leaguemate_leagues_updated = Array.from(new Set(leaguemate_leagues.flat()))
 
-    console.log(`Leaguemates Sync completed at ${new Date()}`)
+        app.set('leaguemate_leagues', leaguemate_leagues_updated)
+    }
+
+    return
+
 }
 
 const updateLeaguemateLeagues = async (app) => {
-    console.log(`Begin Leaguemate Leagues Sync at ${new Date()}`)
     const state = app.get('state')
     const cutoff = new Date(new Date() - (1 * 24 * 60 * 60 * 1000))
 
@@ -302,10 +307,6 @@ const updateLeaguemateLeagues = async (app) => {
 
         console.log(`${leagues_to_update_batch.length} leagues updated, ${leagues_to_update_pending.length} Leagues left to update`)
     }
-
-
-
-    console.log(`Leaguemate Leagues Sync completed at ${new Date()}`)
 }
 
 const updateTrades = async (app) => {
