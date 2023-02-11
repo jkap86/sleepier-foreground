@@ -11,7 +11,7 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
         await Promise.all(leagues_to_add
             .slice(j, Math.min(j + increment_new, leagues_to_add.length))
             .map(async league_to_add => {
-                let league, users, rosters;
+                let league, users, rosters, drafts;
                 try {
                     [league, users, rosters, drafts] = await Promise.all([
                         await axios.get(`https://api.sleeper.app/v1/league/${league_to_add}`),

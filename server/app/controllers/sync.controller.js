@@ -70,7 +70,7 @@ exports.boot = async (app) => {
 }
 
 exports.leaguemates = async (app) => {
-    let interval = .5 * 60 * 1000
+    let interval = 1.5 * 60 * 1000
 
     setTimeout(async () => {
         await updateLeaguemates(app)
@@ -269,7 +269,10 @@ const updateLeaguemateLeagues = async (app) => {
     if (new_leagues.length > 0) {
         const leagues_to_add = new_leagues.slice(0, 50)
 
-        const new_leagues_pending = new_leagues.filter(l => !leagues_to_add.includes(l))
+        const new_leagues_pending = [...new_leagues.filter(l => !leagues_to_add.includes(l)), ...leagues_to_update]
+
+
+        console.log({ NEW_LEAGUES_PENDING: new_leagues_pending })
 
         app.set('leaguemate_leagues', new_leagues_pending.concat(leagues_to_update.map(l => l.league_id?.length > 1)))
 
