@@ -269,12 +269,13 @@ const updateLeaguemateLeagues = async (app) => {
     if (new_leagues.length > 0) {
         const leagues_to_add = new_leagues.slice(0, 50)
 
-        const new_leagues_pending = [...new_leagues.filter(l => !leagues_to_add.includes(l)), ...leagues_to_update]
+        const new_leagues_pending = new_leagues.filter(l => !leagues_to_add.includes(l))
+        const leagues_pending = [...new_leagues_pending, ...leagues_to_update].map(league => typeof (league) === "string")
 
 
         console.log({ NEW_LEAGUES_PENDING: new_leagues_pending })
 
-        app.set('leaguemate_leagues', new_leagues_pending.concat(leagues_to_update.map(l => l.league_id?.length > 1)))
+        app.set('leaguemate_leagues', leagues_pending)
 
         await addNewLeagues(axios, state, League, leagues_to_add, state.league_season, sync = true)
 
