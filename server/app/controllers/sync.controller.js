@@ -1,3 +1,4 @@
+'use strict'
 const db = require("../models");
 const User = db.users;
 const League = db.leagues;
@@ -70,7 +71,7 @@ exports.boot = async (app) => {
 }
 
 exports.leaguemates = async (app) => {
-    let interval = 1.5 * 60 * 1000
+    let interval = .5 * 60 * 1000
 
     setTimeout(async () => {
         await updateLeaguemates(app)
@@ -251,13 +252,23 @@ const updateLeaguemateLeagues = async (app) => {
 
     const league_ids = app.get('leaguemate_leagues')
 
-    let leagues_user_db = await League.findAll({
-        where: {
-            league_id: {
-                [Op.in]: league_ids || []
-            }
+    let leagues_user_db;
+
+    if (league_ids.length > 0) {
+        try {
+            leagues_user_db = await League.findAll({
+                where: {
+                    league_id: {
+                        [Op.in]: league_ids
+                    }
+                }
+            })
+        } catch (error) {
+            console.log(error)
         }
-    })
+    } else {
+        leagues_user_db = []
+    }
 
     leagues_user_db = leagues_user_db.map(league => league.dataValues)
 
@@ -270,14 +281,14 @@ const updateLeaguemateLeagues = async (app) => {
         const leagues_to_add = new_leagues.slice(0, 50)
 
         const new_leagues_pending = new_leagues.filter(l => !leagues_to_add.includes(l))
-        const leagues_pending = [...new_leagues_pending, ...leagues_to_update].map(league => typeof (league) === "string")
+        const leagues_pending = [...new_leagues_pending, ...leagues_to_update]
 
 
-        console.log({ NEW_LEAGUES_PENDING: new_leagues_pending })
+        console.log({ NEW_LEAGUES_PENDING: leagues_pending })
 
         app.set('leaguemate_leagues', leagues_pending)
 
-        await addNewLeagues(axios, state, League, leagues_to_add, state.league_season, sync = true)
+        await addNewLeagues(axios, state, League, leagues_to_add, state.league_season, true)
 
         console.log(`${leagues_to_add.length} leagues added, ${new_leagues_pending.length} Leagues Left to add, ${leagues_to_update.length} Leagues Left to update`)
     } else {
@@ -287,7 +298,7 @@ const updateLeaguemateLeagues = async (app) => {
 
         app.set('leaguemate_leagues', leagues_to_update_pending)
 
-        await updateLeagues(axios, state, League, leagues_to_update_batch, state.league_season, sync = true)
+        await updateLeagues(axios, state, League, leagues_to_update_batch, state.league_season, true)
 
         console.log(`${leagues_to_update_batch.length} leagues updated, ${leagues_to_update_pending.length} Leagues left to update`)
     }

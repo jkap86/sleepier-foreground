@@ -1,4 +1,4 @@
-
+'use strict'
 
 const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync = false) => {
     let new_leagues = []
