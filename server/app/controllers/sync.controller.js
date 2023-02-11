@@ -70,7 +70,7 @@ exports.boot = async (app) => {
 }
 
 exports.leaguemates = async (app) => {
-    let interval = 1 * 60 * 1000
+    let interval = 1.5 * 60 * 1000
 
     setTimeout(async () => {
         await updateLeaguemates(app)
@@ -269,9 +269,9 @@ const updateLeaguemateLeagues = async (app) => {
     if (new_leagues.length > 0) {
         const leagues_to_add = new_leagues.slice(0, 50)
 
-        const new_leagues_pending = new_leagues.filter(l => !leagues_to_add.includes(l))
+        const new_leagues_pending = new_leagues.filter(l => l && !leagues_to_add.includes(l))
 
-        app.set('leaguemate_leagues', [...new_leagues_pending, ...leagues_to_update.map(l => l.league_id)].flat())
+        app.set('leaguemate_leagues', new_leagues_pending.concat(leagues_to_update.map(l => l.league_id)))
 
         await addNewLeagues(axios, state, League, leagues_to_add, state.league_season, sync = true)
 
@@ -373,7 +373,12 @@ const updateTrades = async (app) => {
                             league: {
                                 league_id: league.league_id,
                                 name: league.name,
-                                avatar: league.avatar
+                                avatar: league.avatar,
+                                best_ball: league.best_ball,
+                                type: league.type,
+                                roster_positions: league.roster_positions,
+                                scoring_settings: league.scoring_settings
+
                             },
                             users: league.users,
                             rosters: league.rosters,
@@ -385,7 +390,7 @@ const updateTrades = async (app) => {
         })
     )
 
-    Trade.bulkCreate(transactions_week, { ignoreDuplicates: true })
+    Trade.bulkCreate(transactions_week, { updateOnDuplicate: ['manager', 'adds', 'drops', 'draft_picks', 'league', 'users', 'rosters', 'drafts'] })
 
     if (leagues_to_update.length < increment) {
         app.set('trades_sync_counter', 0)
