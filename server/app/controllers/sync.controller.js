@@ -113,7 +113,7 @@ const playoffs_scoring = async (app) => {
     const rounds = ['Week_18', 'WC', 'DIV', 'CONF', 'SB']
 
     let week;
-    if (schedule_cur_week.data.nflSchedule.matchup.find(x => x.gameSecondsRemaining !== "0")) {
+    if (schedule_cur_week.data.nflSchedule.matchup?.find(x => x.gameSecondsRemaining !== "0")) {
         week = schedule_cur_week.data.nflSchedule.week - 17
     } else {
         week = schedule_cur_week.data.nflSchedule.week - 18
