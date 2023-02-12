@@ -511,6 +511,16 @@ tr.main.active {
   z-index: 13;
 }
 
+table#trades tr.main.active,
+table#trades div.secondary.nav,
+table#trades table.secondary.lineup,
+table#trades table.secondary.subs,
+table#trades tr.secondary.active {
+  position: initial;
+}
+
+
+
 table.main_body {
   table-layout: fixed;
   margin: auto;

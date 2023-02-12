@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import TableTrades from "../Home/tableTrades";
 import Search from "../Home/search";
-import TradeTargets from "./tradeTargets";
+import TradeInfo from "./tradeInfo";
 
 const Trades = ({
     propTrades,
@@ -163,7 +163,7 @@ const Trades = ({
                     })
                 ],
                 secondary_table: (
-                    <TradeTargets
+                    <TradeInfo
                         trade={trade}
                         stateAllPlayers={stateAllPlayers}
                     />

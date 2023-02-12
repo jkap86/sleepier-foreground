@@ -101,6 +101,7 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
             {
                 body?.length > 0 ?
                     body_filtered
+                        ?.filter(x => x)
                         ?.slice(Math.max(((page || 1) - 1) * 25, 0), (((page || 1) - 1) * 25) + 25)
                         ?.map((item, index) =>
                             <tbody key={index}

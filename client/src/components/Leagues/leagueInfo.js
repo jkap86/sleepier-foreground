@@ -1,14 +1,14 @@
 import { useState } from "react";
 import TableMain from "../Home/tableMain";
-import { days, default_scoring_settings } from '../Functions/misc';
-import { Link } from 'react-router-dom';
+import { days, default_scoring_settings, scoring_settings_display } from '../Functions/misc';
+
 
 const LeagueInfo = ({
     stateAllPlayers,
-    state_user,
-    league
+    league,
+    scoring_settings
 }) => {
-    const [itemActive, setItemActive] = useState(league.userRoster.roster_id);
+    const [itemActive, setItemActive] = useState('');
     const [secondaryContent, setSecondaryContent] = useState('Lineup')
 
     const active_roster = league.rosters.find(x => x.roster_id === itemActive)
@@ -175,8 +175,7 @@ const LeagueInfo = ({
                         colSpan: 11
                     },
                 ]
-            },
-            {
+            }, (league.userRoster && {
                 id: 'Trade Deadline',
                 list: [
                     {
@@ -188,8 +187,8 @@ const LeagueInfo = ({
                         colSpan: 11
                     }
                 ]
-            },
-            {
+            }),
+            (league.userRoster && {
                 id: 'Daily Waivers',
                 list: [
                     {
@@ -202,17 +201,31 @@ const LeagueInfo = ({
                         colSpan: 11
                     }
                 ]
-            }
+            }),
+            ...(scoring_settings
+                && Object.keys(scoring_settings)
+                    .filter(setting => (scoring_settings[setting] !== default_scoring_settings[setting] || scoring_settings_display.includes(setting)))
+                    .map(setting => {
+                        return {
+                            id: setting,
+                            list: [
+                                {
+                                    text: setting,
+                                    colSpan: 11
+                                },
+                                {
+                                    text: scoring_settings[setting].toString(),
+                                    colSpan: 11
+                                }
+                            ]
+                        }
+                    })
+            )
         ]
 
     return <>
         <div className="secondary nav">
             <div>
-                <button>
-                    <Link to={`/playoffs/${league.league_id}`} target="_blank">
-                        Playoffs
-                    </Link>
-                </button>
                 <button className="active">Standings</button>
             </div>
             <div>

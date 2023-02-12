@@ -106,6 +106,20 @@ export const default_scoring_settings = {
     "rec_fd": 0
 }
 
+export const scoring_settings_display = [
+    "pass_yd",
+    "pass_td",
+    "pass_2pt",
+    "int",
+    "rush_yd",
+    "rush_td",
+    "rush_2pt",
+    "rec",
+    "bonus_rec_te",
+    "rec_yd",
+    "rec_td",
+    "rec_2pt"
+]
 export const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
 
 
