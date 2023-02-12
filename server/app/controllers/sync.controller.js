@@ -222,6 +222,7 @@ const updateLeaguemates = async (app) => {
         console.log(`${leaguemates.length} Leaguemates to Update...`)
         leaguemates_sorted = leaguemates
             .sort((a, b) => a.time - b.time)
+            .slice(0, 1000)
             .map(lm => {
                 return {
                     user_id: lm.user_id,
@@ -232,7 +233,7 @@ const updateLeaguemates = async (app) => {
 
         await User.bulkCreate(leaguemates_sorted, { updateOnDuplicate: ['username', 'avatar'] })
 
-        app.set('leaguemates', [])
+        app.set('leaguemates', leaguemates.filter(l => !leaguemates_sorted.find(ls => ls.user_id === l.user_id)))
 
         let leaguemate_leagues = app.get('leaguemate_leagues')
 
