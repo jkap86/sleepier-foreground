@@ -72,7 +72,7 @@ exports.boot = async (app) => {
 
 exports.leaguemates = async (app) => {
     console.log(`Begin Leaguemates Sync at ${new Date()}`)
-    let interval = .5 * 60 * 1000
+    let interval = 1.5 * 60 * 1000
 
     setTimeout(async () => {
         await updateLeaguemates(app)

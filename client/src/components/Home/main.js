@@ -57,7 +57,12 @@ const Main = () => {
                         Object.keys(trade.adds || {}).map(add => {
                             const lm_user_id = trade.adds[add]
 
-                            return leagues.data.filter(league => league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id && league.userRoster.players.includes(add))
+                            return leagues.data
+                                .filter(league =>
+                                    league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
+                                    && league.userRoster.players.includes(add)
+                                    && league.league_id !== trade.league.league_id
+                                )
                                 .map(league => {
                                     return trade_away.push({
                                         player_id: add,
@@ -84,6 +89,7 @@ const Main = () => {
                                 .filter(league =>
                                     league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
                                     && league.rosters?.find(r => r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id))?.players?.includes(drop)
+                                    && league.league_id !== trade.league.league_id
                                 )
                                 .map(league => {
                                     return acquire.push({

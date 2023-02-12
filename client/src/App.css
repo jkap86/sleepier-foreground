@@ -207,6 +207,10 @@ ol {
   outline: .5rem solid black;
 }
 
+.end:hover {
+  direction: rtl;
+}
+
 p.image {
   position: relative;
 }
@@ -500,8 +504,7 @@ tr.main2.active {
   border: .25rem ridge var(--color2);
 }
 
-tr.main.active,
-tbody.active.trade_row {
+tr.main.active {
   background-color: var(--color3);
   position: sticky;
   top: 4.75rem;
@@ -626,6 +629,10 @@ table.secondary tr.secondary.active td {
 
 table.secondary td {
   background-color: rgb(57, 57, 57);
+}
+
+table#trades table.secondary>thead {
+  position: initial;
 }
 
 table.secondary>thead {

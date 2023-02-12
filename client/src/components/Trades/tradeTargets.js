@@ -17,7 +17,7 @@ const TradeTargets = ({
         [
             {
                 text: 'Manager',
-                colSpan: 2
+                colSpan: 3
             },
             {
                 text: 'Player',
@@ -25,7 +25,7 @@ const TradeTargets = ({
             },
             {
                 text: 'League',
-                colSpan: 4
+                colSpan: 3
             }
 
         ]
@@ -38,15 +38,33 @@ const TradeTargets = ({
             list: [
                 {
                     text: add.manager.username,
-                    colSpan: 2
+                    colSpan: 3,
+                    className: 'left',
+                    image: {
+                        src: add.manager.avatar,
+                        alt: 'manager avatar',
+                        type: 'user'
+                    }
                 },
                 {
                     text: stateAllPlayers[add.player_id]?.full_name,
-                    colSpan: 3
+                    colSpan: 3,
+                    className: 'left',
+                    image: {
+                        src: add.player_id,
+                        alt: 'player headshot',
+                        type: 'player'
+                    }
                 },
                 {
                     text: add.league.name,
-                    colSpan: 4
+                    colSpan: 3,
+                    className: 'left',
+                    image: {
+                        src: add.league.avatar,
+                        alt: 'league avatar',
+                        type: 'league'
+                    }
                 }
             ]
         }
@@ -63,7 +81,7 @@ const TradeTargets = ({
         [
             {
                 text: 'Manager',
-                colSpan: 2
+                colSpan: 3
             },
             {
                 text: 'Player',
@@ -71,7 +89,7 @@ const TradeTargets = ({
             },
             {
                 text: 'League',
-                colSpan: 4
+                colSpan: 3
             }
 
         ]
@@ -84,15 +102,33 @@ const TradeTargets = ({
             list: [
                 {
                     text: add.manager.username,
-                    colSpan: 2
+                    colSpan: 3,
+                    className: 'left',
+                    image: {
+                        src: add.manager.avatar,
+                        alt: 'manager avatar',
+                        type: 'user'
+                    }
                 },
                 {
                     text: stateAllPlayers[add.player_id]?.full_name,
-                    colSpan: 3
+                    colSpan: 3,
+                    className: 'left',
+                    image: {
+                        src: add.player_id,
+                        alt: 'player headshot',
+                        type: 'player'
+                    }
                 },
                 {
                     text: add.league.name,
-                    colSpan: 4
+                    colSpan: 3,
+                    className: 'left end',
+                    image: {
+                        src: add.league.avatar,
+                        alt: 'league avatar',
+                        type: 'league'
+                    }
                 }
             ]
         }
