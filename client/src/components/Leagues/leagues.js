@@ -75,7 +75,7 @@ const Leagues = ({
             secondary_table: (
                 <LeagueInfo
                     league={league}
-                    state_user={state_user}
+                    scoring_settings={league.scoring_settings}
                     stateAllPlayers={stateAllPlayers}
                 />
             )

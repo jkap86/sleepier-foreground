@@ -214,7 +214,7 @@ const LeagueInfo = ({
                                     colSpan: 11
                                 },
                                 {
-                                    text: scoring_settings[setting].toString(),
+                                    text: scoring_settings[setting].toLocaleString(),
                                     colSpan: 11
                                 }
                             ]
