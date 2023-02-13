@@ -38,7 +38,7 @@ const PlayoffsBreakdown = ({
 
         )
         .map(player_id => {
-            const className = players_eliminated.includes(player_id) || !players_left.includes(player_id) ? 'red' : ''
+            const className = ['PHI', 'KC'].includes(allplayers[player_id].team) ? '' : 'red'
             return {
                 id: player_id,
                 list: [
