@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = (sequelize, Sequelize) => {
     const Trade = sequelize.define("trade", {
         transaction_id: {

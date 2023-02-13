@@ -89,9 +89,9 @@ exports.leaguemates = async (app) => {
 exports.trades = async (app) => {
     let interval = 5 * 60 * 1000
 
-    setInterval(async () => {
+    setTimeout(async () => {
         await updateTrades(app)
-
+        await exports.trades(app)
         const used = process.memoryUsage()
         for (let key in used) {
             console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
@@ -351,4 +351,5 @@ const updateTrades = async (app) => {
     }
 
     console.log(`Transactions Sync completed at ${new Date()}`)
+    return
 }

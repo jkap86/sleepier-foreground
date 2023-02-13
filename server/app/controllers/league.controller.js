@@ -1,3 +1,4 @@
+'use strict'
 const db = require("../models");
 const League = db.leagues;
 const Op = db.Sequelize.Op;

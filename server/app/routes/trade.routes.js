@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = app => {
     const trades = require("../controllers/trade.controller.js");
 

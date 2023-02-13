@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = (sequelize, Sequelize) => {
     const League = sequelize.define("league", {
         league_id: {

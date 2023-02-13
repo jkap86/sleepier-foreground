@@ -1,3 +1,4 @@
+'use strict'
 const ALLPLAYERS = require('../../allplayers.json');
 
 const getAllPlayers = async (axios, state) => {

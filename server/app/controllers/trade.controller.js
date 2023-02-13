@@ -1,3 +1,4 @@
+'use strict'
 const db = require("../models");
 const Trades = db.trades;
 const Op = db.Sequelize.Op;
