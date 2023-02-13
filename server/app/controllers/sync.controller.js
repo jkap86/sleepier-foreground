@@ -144,7 +144,7 @@ const playoffs_scoring = async (app) => {
 
 
 
-    return (30 * 1000)
+    return (24 * 60 * 60 * 1000)
 }
 
 
