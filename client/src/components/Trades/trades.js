@@ -127,7 +127,7 @@ const Trades = ({
                                             .map(pick =>
                                                 <li>
                                                     {
-                                                        `+ ${pick.season} Round ${pick.round}${pick.order ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
+                                                        `+ ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
                                                     }
                                                 </li>
                                             )
@@ -150,7 +150,7 @@ const Trades = ({
                                             .map(pick =>
                                                 <li className="end">
                                                     <span>{
-                                                        `- ${pick.season} Round ${pick.round}${pick.order ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
+                                                        `- ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
                                                     }</span>
                                                 </li>
                                             )

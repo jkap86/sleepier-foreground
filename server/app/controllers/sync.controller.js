@@ -76,8 +76,9 @@ exports.leaguemates = async (app) => {
 
     setTimeout(async () => {
         await updateLeaguemates(app)
-        await updateLeaguemateLeagues(app)
+
         await exports.leaguemates(app)
+
         const used = process.memoryUsage()
         for (let key in used) {
             console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
@@ -91,7 +92,9 @@ exports.trades = async (app) => {
 
     setTimeout(async () => {
         await updateTrades(app)
+
         await exports.trades(app)
+
         const used = process.memoryUsage()
         for (let key in used) {
             console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
@@ -181,6 +184,8 @@ const updateLeaguemates = async (app) => {
         const leaguemate_leagues_updated = Array.from(new Set(leaguemate_leagues.flat()))
 
         app.set('leaguemate_leagues', leaguemate_leagues_updated)
+    } else {
+        await updateLeaguemateLeagues(app)
     }
 
     return
@@ -224,9 +229,6 @@ const updateLeaguemateLeagues = async (app) => {
         const new_leagues_pending = new_leagues.filter(l => !leagues_to_add.includes(l))
         const leagues_pending = [...new_leagues_pending, ...leagues_to_update]
 
-
-        console.log({ NEW_LEAGUES_PENDING: leagues_pending })
-
         app.set('leaguemate_leagues', leagues_pending)
 
         await addNewLeagues(axios, state, League, leagues_to_add, state.league_season, true)
@@ -243,6 +245,7 @@ const updateLeaguemateLeagues = async (app) => {
 
         console.log(`${leagues_to_update_batch.length} leagues updated, ${leagues_to_update_pending.length} Leagues left to update`)
     }
+    return
 }
 
 const updateTrades = async (app) => {
