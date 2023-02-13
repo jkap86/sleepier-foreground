@@ -52,6 +52,7 @@ exports.boot = async (app) => {
 
     app.set('leaguemate_leagues', [])
     app.set('leaguemates', [])
+    app.set('updated_leaguemates', [])
     app.set('trades_sync_counter', 0)
 
     setTimeout(async () => {
@@ -72,7 +73,7 @@ exports.boot = async (app) => {
 
 exports.leaguemates = async (app) => {
     console.log(`Begin Leaguemates Sync at ${new Date()}`)
-    let interval = 1.5 * 60 * 1000
+    let interval = .5 * 60 * 1000
 
     setTimeout(async () => {
         await updateLeaguemates(app)
@@ -153,7 +154,9 @@ const playoffs_scoring = async (app) => {
 
 const updateLeaguemates = async (app) => {
     const state = app.get('state')
-    const leaguemates = app.get('leaguemates')
+    const updated_leaguemates = app.get('updated_leaguemates').filter(lm => lm.updatedAt > new Date(new Date() - (24 * 60 * 60 * 1000)));
+    const leaguemates = app.get('leaguemates').filter(lm => !updated_leaguemates.find(ul => ul.user_id === lm.user_id))
+
     let leaguemates_sorted;
 
     if (leaguemates.length > 0) {
@@ -172,6 +175,15 @@ const updateLeaguemates = async (app) => {
         await User.bulkCreate(leaguemates_sorted, { updateOnDuplicate: ['username', 'avatar'] })
 
         app.set('leaguemates', leaguemates.filter(l => !leaguemates_sorted.find(ls => ls.user_id === l.user_id)))
+
+        const updated_leaguemates_updated = [...updated_leaguemates, ...leaguemates_sorted.map(lms => {
+            return {
+                user_id: lms.user_id,
+                updatedAt: new Date()
+            }
+        })].flat()
+
+        app.set('updated_leaguemates', updated_leaguemates_updated)
 
         let leaguemate_leagues = app.get('leaguemate_leagues')
 
