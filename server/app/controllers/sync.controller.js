@@ -1,7 +1,6 @@
 'use strict'
 const db = require("../models");
 const User = db.users;
-const League = db.leagues;
 const Op = db.Sequelize.Op;
 const https = require('https');
 const axios = require('axios').create({
@@ -153,16 +152,16 @@ const updateLeaguemates = async (app) => {
         console.log(`${leaguemates.length} Leaguemates to Update...`)
         leaguemates_sorted = leaguemates
             .sort((a, b) => a.time - b.time)
-            .slice(0, 250)
             .map(lm => {
                 return {
                     user_id: lm.user_id,
                     username: lm.username,
-                    avatar: lm.avatar
+                    avatar: lm.avatar,
+                    updatedAt: new Date()
                 }
             })
 
-        await User.bulkCreate(leaguemates_sorted, { updateOnDuplicate: ['username', 'avatar'] })
+        await User.bulkCreate(leaguemates_sorted, { updateOnDuplicate: ['username', 'avatar', 'updatedAt'] })
 
         app.set('leaguemates', leaguemates.filter(l => !leaguemates_sorted.find(ls => ls.user_id === l.user_id)))
 
@@ -175,78 +174,12 @@ const updateLeaguemates = async (app) => {
 
         app.set('updated_leaguemates', updated_leaguemates_updated)
 
-        let leaguemate_leagues = app.get('leaguemate_leagues')
 
-        await Promise.all(leaguemates_sorted?.map(async lm => {
-            const lm_leagues = await axios.get(`http://api.sleeper.app/v1/user/${lm.user_id}/leagues/nfl/${state.league_season}`)
-
-            leaguemate_leagues.push(lm_leagues.data.map(league => league.league_id))
-        }))
-
-        const leaguemate_leagues_updated = Array.from(new Set(leaguemate_leagues.flat()))
-
-        app.set('leaguemate_leagues', leaguemate_leagues_updated)
-    } else {
-        await updateLeaguemateLeagues(app)
     }
 
     return
 
 }
 
-const updateLeaguemateLeagues = async (app) => {
-    const state = app.get('state')
-    const cutoff = new Date(new Date() - (3 * 24 * 60 * 60 * 1000))
 
-    const league_ids = app.get('leaguemate_leagues')
-
-    let leagues_user_db;
-
-    if (league_ids.length > 0) {
-        try {
-            leagues_user_db = await League.findAll({
-                where: {
-                    league_id: {
-                        [Op.in]: league_ids
-                    }
-                }
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    } else {
-        leagues_user_db = []
-    }
-
-    leagues_user_db = leagues_user_db.map(league => league.dataValues)
-
-    const leagues_to_update = leagues_user_db.filter(l_db => l_db.updatedAt < cutoff).map(league => league.league_id)
-    const new_leagues = league_ids
-        .filter(l => !leagues_user_db.find(l_db => l_db.league_id === l))
-
-    console.log(`${new_leagues.length} Leagues to add, ${leagues_to_update.length} Leagues to update`)
-    if (new_leagues.length > 0) {
-        const leagues_to_add = new_leagues.slice(0, 50)
-
-        const new_leagues_pending = new_leagues.filter(l => !leagues_to_add.includes(l))
-        const leagues_pending = [...new_leagues_pending, ...leagues_to_update]
-
-        app.set('leaguemate_leagues', leagues_pending)
-
-        await addNewLeagues(axios, state, League, leagues_to_add, state.league_season, true)
-
-        console.log(`${leagues_to_add.length} leagues added, ${new_leagues_pending.length} Leagues Left to add, ${leagues_to_update.length} Leagues Left to update`)
-    } else {
-        const leagues_to_update_batch = leagues_to_update.slice(0, 250)
-
-        const leagues_to_update_pending = leagues_to_update.filter(l => !leagues_to_update_batch.includes(l))
-
-        app.set('leaguemate_leagues', leagues_to_update_pending)
-
-        await updateLeagues(axios, state, League, leagues_to_update_batch, state.league_season, true)
-
-        console.log(`${leagues_to_update_batch.length} leagues updated, ${leagues_to_update_pending.length} Leagues left to update`)
-    }
-    return
-}
 
