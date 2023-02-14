@@ -69,7 +69,7 @@ exports.create = async (req, res, app) => {
                 .sort((a, b) => a.index - b.index)
         )
 
-        myCache.set(`${req.body.user_id}_${req.body.season}`, leagues_all, 15 * 60)
+        myCache.set(`${req.body.user_id}_${req.body.season}`, leagues_all, 60 * 60)
 
         let leaguemates = app.get('leaguemates')
 

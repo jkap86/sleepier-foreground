@@ -71,8 +71,8 @@ exports.boot = async (app) => {
 }
 
 exports.leaguemates = async (app) => {
-    console.log(`Begin Leaguemates Sync at ${new Date()}`)
-    let interval = 1 * 60 * 1000
+
+    let interval = .5 * 60 * 1000
 
     setTimeout(async () => {
         await updateLeaguemates(app)
@@ -84,7 +84,7 @@ exports.leaguemates = async (app) => {
             console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
         }
     }, interval)
-    console.log(`Leaguemates Sync completed at ${new Date()}`)
+
 }
 
 
@@ -139,6 +139,7 @@ const playoffs_scoring = async (app) => {
 
 
 const updateLeaguemates = async (app) => {
+    console.log(`Begin Leaguemates Sync at ${new Date()}`)
     const state = app.get('state')
     const updated_leaguemates = app.get('updated_leaguemates').filter(lm => lm.updatedAt > new Date(new Date() - (24 * 60 * 60 * 1000)));
     const leaguemates = app.get('leaguemates').filter(lm => !updated_leaguemates.find(ul => ul.user_id === lm.user_id))
@@ -149,7 +150,7 @@ const updateLeaguemates = async (app) => {
         console.log(`${leaguemates.length} Leaguemates to Update...`)
         leaguemates_sorted = leaguemates
             .sort((a, b) => a.time - b.time)
-            .slice(0, 1000)
+            .slice(0, 250)
             .map(lm => {
                 return {
                     user_id: lm.user_id,
@@ -185,7 +186,7 @@ const updateLeaguemates = async (app) => {
     } else {
         await updateLeaguemateLeagues(app)
     }
-
+    console.log(`Leaguemates Sync completed at ${new Date()}`)
     return
 
 }
