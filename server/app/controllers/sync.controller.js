@@ -74,10 +74,14 @@ exports.leaguemates = async (app) => {
 
     let interval = .5 * 60 * 1000
 
-    setTimeout(async () => {
-        await updateLeaguemates(app)
-
-        await exports.leaguemates(app)
+    setInterval(async () => {
+        if (app.get('syncing') !== 'true') {
+            console.log(`Begin Leaguemates Sync at ${new Date()}`)
+            app.set('syncing', 'true')
+            await updateLeaguemates(app)
+            app.set('syncing', 'false')
+            console.log(`Leaguemates Sync completed at ${new Date()}`)
+        }
 
         const used = process.memoryUsage()
         for (let key in used) {
@@ -139,7 +143,6 @@ const playoffs_scoring = async (app) => {
 
 
 const updateLeaguemates = async (app) => {
-    console.log(`Begin Leaguemates Sync at ${new Date()}`)
     const state = app.get('state')
     const updated_leaguemates = app.get('updated_leaguemates').filter(lm => lm.updatedAt > new Date(new Date() - (24 * 60 * 60 * 1000)));
     const leaguemates = app.get('leaguemates').filter(lm => !updated_leaguemates.find(ul => ul.user_id === lm.user_id))
@@ -186,7 +189,7 @@ const updateLeaguemates = async (app) => {
     } else {
         await updateLeaguemateLeagues(app)
     }
-    console.log(`Leaguemates Sync completed at ${new Date()}`)
+
     return
 
 }

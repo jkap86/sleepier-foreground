@@ -43,61 +43,60 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
                     matchups[`matchups_${key + 1}`] = matchups_prev_week?.data || []
                 }))
 
-                const new_league = {
-                    league_id: league_to_add,
-                    name: league.data.name,
-                    avatar: league.data.avatar,
-                    season: league.data.season,
-                    best_ball: league.data.settings.best_ball,
-                    type: league.data.settings.type,
-                    settings: league.data.settings,
-                    scoring_settings: league.data.scoring_settings,
-                    roster_positions: league.data.roster_positions,
-                    users: users.data.map(user => user.user_id),
-                    rosters: rosters.data
-                        ?.sort((a, b) => b.settings?.wins - a.settings.wins || b.settings.fpts - a.settings.fpts)
-                        ?.map((roster, index) => {
-                            const user = users.data.find(u => u.user_id === roster.owner_id)
+                if (league.data) {
+                    const new_league = {
+                        league_id: league_to_add,
+                        name: league.data.name,
+                        avatar: league.data.avatar,
+                        season: league.data.season,
+                        best_ball: league.data.settings.best_ball,
+                        type: league.data.settings.type,
+                        settings: league.data.settings,
+                        scoring_settings: league.data.scoring_settings,
+                        roster_positions: league.data.roster_positions,
+                        users: users.data.map(user => user.user_id),
+                        rosters: rosters.data
+                            ?.sort((a, b) => b.settings?.wins - a.settings.wins || b.settings.fpts - a.settings.fpts)
+                            ?.map((roster, index) => {
+                                const user = users.data.find(u => u.user_id === roster.owner_id)
+                                return {
+                                    rank: index + 1,
+                                    taxi: roster.taxi,
+                                    starters: roster.starters,
+                                    settings: roster.settings,
+                                    roster_id: roster.roster_id,
+                                    reserve: roster.reserve,
+                                    players: roster.players,
+                                    user_id: roster.owner_id,
+                                    username: user?.display_name,
+                                    avatar: user?.avatar,
+                                    co_owners: roster.co_owners?.map(co => {
+                                        const co_user = users.data.find(u => u.user_id === co)
+                                        return {
+                                            user_id: co_user?.user_id,
+                                            username: co_user?.display_name,
+                                            avatar: co_user?.avatar
+                                        }
+                                    })
+                                }
+                            }),
+                        drafts: drafts.data.map(draft => {
                             return {
-                                rank: index + 1,
-                                taxi: roster.taxi,
-                                starters: roster.starters,
-                                settings: roster.settings,
-                                roster_id: roster.roster_id,
-                                reserve: roster.reserve,
-                                players: roster.players,
-                                user_id: roster.owner_id,
-                                username: user?.display_name,
-                                avatar: user?.avatar,
-                                co_owners: roster.co_owners?.map(co => {
-                                    const co_user = users.data.find(u => u.user_id === co)
-                                    return {
-                                        user_id: co_user?.user_id,
-                                        username: co_user?.display_name,
-                                        avatar: co_user?.avatar
-                                    }
-                                })
+                                draft_id: draft.draft_id,
+                                status: draft.status,
+                                rounds: draft.settings.rounds,
+                                draft_order: draft.draft_order
                             }
                         }),
-                    drafts: drafts.data.map(draft => {
-                        return {
-                            draft_id: draft.draft_id,
-                            status: draft.status,
-                            rounds: draft.settings.rounds,
-                            draft_order: draft.draft_order
-                        }
-                    }),
-                    ...matchups
-                }
+                        ...matchups
+                    }
+                    new_leagues_batch.push(new_league)
 
-
-
-                new_leagues_batch.push(new_league)
-
-                if (!sync) {
-                    new_leagues.push(new_league)
-                } else {
-                    new_leagues.push(new_league.league_id)
+                    if (!sync) {
+                        new_leagues.push(new_league)
+                    } else {
+                        new_leagues.push(new_league.league_id)
+                    }
                 }
             })
         )
