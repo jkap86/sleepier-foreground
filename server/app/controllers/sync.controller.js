@@ -71,15 +71,18 @@ exports.boot = async (app) => {
 
 exports.leaguemates = async (app) => {
 
-    let interval = .5 * 60 * 1000
+    let interval = .25 * 60 * 1000
 
     setInterval(async () => {
-        if (app.get('syncing') !== 'true') {
+        let already_syncing = app.get('syncing')
+        if (!(already_syncing > 0)) {
             console.log(`Begin Leaguemates Sync at ${new Date()}`)
-            app.set('syncing', 'true')
+
             await updateLeaguemates(app)
-            app.set('syncing', 'false')
+
             console.log(`Leaguemates Sync completed at ${new Date()}`)
+        } else {
+            console.log(`Skipping Sync at ${new Date()}, ${already_syncing} syncs ongoing...`)
         }
 
         const used = process.memoryUsage()
@@ -152,6 +155,7 @@ const updateLeaguemates = async (app) => {
         console.log(`${leaguemates.length} Leaguemates to Update...`)
         leaguemates_sorted = leaguemates
             .sort((a, b) => a.time - b.time)
+            .slice(0, 500)
             .map(lm => {
                 return {
                     user_id: lm.user_id,
