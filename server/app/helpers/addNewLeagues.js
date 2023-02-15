@@ -28,20 +28,22 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
                         : 0
 
                 let matchups = {};
+                if (sync || state.league_season === season) {
 
-                await Promise.all(Array.from(Array(weeks).keys()).map(async key => {
-                    let matchups_prev_week;
-                    try {
-                        matchups_prev_week = await axios.get(`https://api.sleeper.app/v1/league/${league_to_add}/matchups/${key + 1}`)
-                    } catch (error) {
-                        console.log({
-                            code: error.code,
-                            message: error.message,
-                            stack: error.stack
-                        })
-                    }
-                    matchups[`matchups_${key + 1}`] = matchups_prev_week?.data || []
-                }))
+                    await Promise.all(Array.from(Array(weeks).keys()).map(async key => {
+                        let matchups_prev_week;
+                        try {
+                            matchups_prev_week = await axios.get(`https://api.sleeper.app/v1/league/${league_to_add}/matchups/${key + 1}`)
+                        } catch (error) {
+                            console.log({
+                                code: error.code,
+                                message: error.message,
+                                stack: error.stack
+                            })
+                        }
+                        matchups[`matchups_${key + 1}`] = matchups_prev_week?.data || []
+                    }))
+                }
 
                 if (league.data) {
                     const new_league = {

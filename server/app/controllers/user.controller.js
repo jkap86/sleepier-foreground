@@ -12,7 +12,7 @@ const axios = require('axios').create({
 
 
 exports.create = async (req, res) => {
-    console.log(`***SEARCHING FOR ${req.body.username}***`)
+    console.log(`***SEARCHING FOR ${req.body.username}*** SEASON: ${req.body.season}`)
     const user = await axios.get(`http://api.sleeper.app/v1/user/${req.body.username}`)
 
     if (user.data?.user_id) {

@@ -21,7 +21,8 @@ const Main = () => {
         const fetchLeagues = async () => {
             setIsLoading(true)
             const user = await axios.post('/user/create', {
-                username: params.username
+                username: params.username,
+                season: params.season
             })
 
             if (!user.data?.error) {
