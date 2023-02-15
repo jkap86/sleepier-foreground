@@ -27,9 +27,9 @@ exports.create = async (req, res, app) => {
         state = state.data
         const leagues = await axios.get(`http://api.sleeper.app/v1/user/${req.body.user_id}/leagues/nfl/${req.body.season}`)
 
-        const cutoff = req.body.season === state.league_season ? new Date(new Date() - (6 * 60 * 60 * 1000)) : new Date(new Date().getFullYear, 0, 1)
+        const now = new Date()
+        const cutoff = req.body.season === state.league_season ? new Date(new Date() - (6 * 60 * 60 * 1000)) : new Date(now.getFullYear(), 0, 1)
         const league_ids = leagues.data.map(league => league.league_id)
-
 
         let leagues_user_db = await League.findAll({
             where: {
