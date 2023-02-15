@@ -12,10 +12,10 @@ const axios = require('axios').create({
 const NodeCache = require('node-cache');
 const { addNewLeagues, updateLeagues } = require('../helpers/addNewLeagues');
 
-const myCache = new NodeCache;
+const LeagueCache = new NodeCache;
 
 exports.create = async (req, res, app) => {
-    const leagues_cache = myCache.get(`${req.body.user_id}_${req.body.season}`)
+    const leagues_cache = LeagueCache.get(`${req.body.user_id}_${req.body.season}`)
 
     if (leagues_cache) {
         console.log('GETTING LEAGUES FROM CACHE...')
@@ -71,7 +71,7 @@ exports.create = async (req, res, app) => {
                 .sort((a, b) => a.index - b.index)
         )
 
-        myCache.set(`${req.body.user_id}_${req.body.season}`, leagues_all, 60 * 60)
+        LeagueCache.set(`${req.body.user_id}_${req.body.season}`, leagues_all, 60 * 60)
 
         if (state.league_season === req.body.season) {
             let leaguemates = app.get('leaguemates')

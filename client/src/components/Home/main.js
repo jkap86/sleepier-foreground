@@ -45,7 +45,8 @@ const Main = () => {
                 }).flat(2)
 
                 const trades = await axios.post('/trade/find', {
-                    leaguemate_ids: Object.keys(leaguemates)
+                    leaguemate_ids: Object.keys(leaguemates),
+                    user_id: user.data[0]?.user_id.toString()
                 })
 
 
