@@ -45,10 +45,36 @@ exports.find = async (req, res) => {
             }
         })
 
-        TradeCache.set(req.body.user_id, trades_db.map(trade => trade.dataValues.transaction_id), 15 * 60)
+        TradeCache.set(req.body.user_id, trades_db.map(trade => trade.dataValues.transaction_id), 30 * 60)
 
         res.send(trades_db.map(trade => trade.dataValues))
     }
 }
 
 
+exports.pricecheck = async (req, res) => {
+    console.log({ PLAYER_ID: req.body.player_id })
+
+    let alltrades;
+    try {
+        alltrades = await Trades.findAll({
+            where: {
+                adds: {
+                    [req.body.player_id]: {
+                        [Op.not]: null
+                    }
+                }
+            }
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    res.send(alltrades
+        .map(trade => trade.dataValues)
+        .filter(trade =>
+            Object.values(trade.adds).filter(x => x === trade.adds[req.body.player_id]).length === 1
+            && !trade.draft_picks.find(pick => pick.old_user?.user_id === trade.adds[req.body.player_id])
+            && trade.draft_picks.find(pick => pick.old_user)
+        )
+    )
+}

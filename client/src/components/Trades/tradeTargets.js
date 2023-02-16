@@ -6,7 +6,7 @@ const TradeTargets = ({
     stateAllPlayers
 }) => {
 
-    console.log(trade)
+
     const trade_acquisitions_headers = [
         [
             {

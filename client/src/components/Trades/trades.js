@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import TableTrades from "../Home/tableTrades";
@@ -18,6 +19,21 @@ const Trades = ({
     const [searched_player, setSearched_Player] = useState('')
     const [searched_player2, setSearched_Player2] = useState('')
     const [filter, setFilter] = useState('All Trades')
+
+
+    useEffect(() => {
+
+        const fetchPlayerTrades = async () => {
+            const player_trades = await axios.post('/trade/pricecheck', {
+                player_id: searched_player.id
+            })
+            console.log(player_trades.data)
+        }
+        if (searched_player !== '') {
+            fetchPlayerTrades()
+        }
+
+    }, [searched_player])
 
     useEffect(() => {
         setStateTrades(propTrades)

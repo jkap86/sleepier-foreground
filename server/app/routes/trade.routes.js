@@ -7,7 +7,7 @@ module.exports = app => {
 
     router.post("/find", trades.find)
 
-
+    router.post("/pricecheck", trades.pricecheck)
 
     app.use('/trade', router);
 }
