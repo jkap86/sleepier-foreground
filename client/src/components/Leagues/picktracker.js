@@ -50,11 +50,23 @@ const PickTracker = ({ }) => {
                     },
                     {
                         text: kicker.picked_by,
-                        colSpan: 4
+                        colSpan: 4,
+                        className: 'left',
+                        image: {
+                            src: kicker.picked_by_avatar,
+                            alt: 'user avatar',
+                            type: 'user'
+                        }
                     },
                     {
                         text: kicker.player,
-                        colSpan: 4
+                        colSpan: 4,
+                        className: 'left end',
+                        image: {
+                            src: kicker.player_id,
+                            alt: 'player headshot',
+                            type: 'player'
+                        }
                     }
                 ]
             }

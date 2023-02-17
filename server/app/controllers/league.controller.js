@@ -116,7 +116,9 @@ exports.draft = async (req, res, app) => {
             return {
                 pick: Math.floor(index / teams) + 1 + "." + ((index % teams) + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 }),
                 player: allplayers[pick.player_id].full_name,
-                picked_by: users.data.find(u => u.user_id === pick.picked_by)?.display_name
+                player_id: pick.player_id,
+                picked_by: users.data.find(u => u.user_id === pick.picked_by)?.display_name,
+                picked_by_avatar: users.data.find(u => u.user_id === pick.picked_by)?.avatar
             }
         })
 
