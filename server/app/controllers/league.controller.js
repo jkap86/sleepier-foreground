@@ -104,7 +104,7 @@ exports.create = async (req, res, app) => {
 
 exports.draft = async (req, res, app) => {
     const league_drafts = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}/drafts`)
-    const active_draft = league_drafts.data?.find(d => d.status === 'drafting')
+    const active_draft = league_drafts.data?.find(d => d.settings.slots_k > 0)
 
     if (active_draft) {
         const allplayers = app.get('allplayers')

@@ -7,6 +7,7 @@ import TableMain from '../Home/tableMain';
 const PickTracker = ({ }) => {
     const params = useParams();
     const [kickers, setKickers] = useState([])
+    const [page, setPage] = useState(1)
 
     useEffect(() => {
 
@@ -86,6 +87,8 @@ const PickTracker = ({ }) => {
             type={'main'}
             headers={headers}
             body={body}
+            page={page}
+            setPage={setPage}
         />
     </>
 }
