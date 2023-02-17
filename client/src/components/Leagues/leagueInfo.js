@@ -1,6 +1,7 @@
 import { useState } from "react";
 import TableMain from "../Home/tableMain";
 import { days, default_scoring_settings, scoring_settings_display } from '../Functions/misc';
+import { Link } from "react-router-dom";
 
 
 const LeagueInfo = ({
@@ -10,6 +11,8 @@ const LeagueInfo = ({
 }) => {
     const [itemActive, setItemActive] = useState('');
     const [secondaryContent, setSecondaryContent] = useState('Lineup')
+
+    console.log(league)
 
     const active_roster = league.rosters.find(x => x.roster_id === itemActive)
 
@@ -226,6 +229,13 @@ const LeagueInfo = ({
     return <>
         <div className="secondary nav">
             <div>
+                {
+                    league.drafts.find(x => x.status === 'drafting') ?
+                        <Link to={`/picktracker/${league.league_id}`} target='_blank'>
+                            Kicker Tracker
+                        </Link>
+                        : null
+                }
                 <button className="active">Standings</button>
             </div>
             <div>
