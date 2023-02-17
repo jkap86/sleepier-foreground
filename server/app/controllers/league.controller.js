@@ -67,7 +67,7 @@ exports.create = async (req, res, app) => {
                         userRoster: userRoster
                     }
                 })
-                .filter(league => league.userRoster?.players?.length > 0)
+                .filter(league => league.userRoster?.players?.length > 0 || league.drafts.find(d => d.status === 'drafting'))
                 .sort((a, b) => a.index - b.index)
         )
 
@@ -99,5 +99,30 @@ exports.create = async (req, res, app) => {
         app.set('syncing', still_syncing -= 1)
 
         res.send(leagues_all)
+    }
+}
+
+exports.draft = async (req, res, app) => {
+    const league_drafts = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}/drafts`)
+    const active_draft = league_drafts.data?.find(d => d.status === 'drafting')
+
+    if (active_draft) {
+        const allplayers = app.get('allplayers')
+        const draft_picks = await axios.get(`https://api.sleeper.app/v1/draft/${active_draft.draft_id}/picks`)
+        const users = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}/users`)
+        const teams = Object.keys(active_draft.draft_order).length
+
+        const picktracker = draft_picks.data.filter(pick => pick.metadata.position === "K").map((pick, index) => {
+            return {
+                pick: Math.floor(index / teams) + 1 + "." + ((index % teams) + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 }),
+                player: allplayers[pick.player_id].full_name,
+                picked_by: users.data.find(u => u.user_id === pick.picked_by)?.display_name
+            }
+        })
+
+        res.send(picktracker)
+
+    } else {
+        res.send([])
     }
 }

@@ -62,7 +62,7 @@ const Main = () => {
                             return leagues.data
                                 .filter(league =>
                                     league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
-                                    && league.userRoster.players.includes(add)
+                                    && league.userRoster.players?.includes(add)
                                     && league.league_id !== trade.league.league_id
                                 )
                                 .map(league => {

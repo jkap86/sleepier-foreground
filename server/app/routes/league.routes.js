@@ -9,7 +9,9 @@ module.exports = app => {
         leagues.create(req, res, app)
     })
 
-
+    router.post("/draft", async (req, res) => {
+        leagues.draft(req, res, app)
+    })
 
     app.use('/league', router);
 }
