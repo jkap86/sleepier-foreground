@@ -19,26 +19,37 @@ const Trades = ({
     const [searched_player, setSearched_Player] = useState('')
     const [searched_player2, setSearched_Player2] = useState('')
     const [filter, setFilter] = useState('All Trades')
+    const [pricecheckTrades, setPricecheckTrades] = useState({})
+    const [pricecheckPlayer, setPricecheckPlayer] = useState('')
 
 
     useEffect(() => {
 
         const fetchPlayerTrades = async () => {
-            const player_trades = await axios.post('/trade/pricecheck', {
-                player_id: searched_player.id
-            })
-            console.log(player_trades.data)
+            let pcTrades = pricecheckTrades
+
+            if (!pcTrades[pricecheckPlayer.id]) {
+                const player_trades = await axios.post('/trade/pricecheck', {
+                    player_id: pricecheckPlayer.id
+                })
+                pcTrades[pricecheckPlayer.id] = player_trades.data
+                setPricecheckTrades({ ...pcTrades })
+            }
         }
-        if (searched_player !== '') {
+        if (pricecheckPlayer !== '') {
             fetchPlayerTrades()
         }
 
-    }, [searched_player])
+    }, [pricecheckPlayer])
 
     useEffect(() => {
         setStateTrades(propTrades)
     }, [params.username])
 
+
+    useEffect(() => {
+        setPage(1)
+    }, [stateTradesFiltered, pricecheckPlayer])
 
     useEffect(() => {
         const filterTrades = () => {
@@ -79,6 +90,7 @@ const Trades = ({
         filterTrades()
     }, [stateTrades, searched_player, searched_manager, searched_player2, filter])
 
+
     const trades_headers = [
         [
             {
@@ -92,7 +104,9 @@ const Trades = ({
         ]
     ]
 
-    const trades_body = stateTradesFiltered
+    const tradesDisplay = filter === 'Price Check' ? pricecheckTrades[pricecheckPlayer.id] || [] : stateTradesFiltered
+
+    const trades_body = tradesDisplay
         .sort((a, b) => parseInt(b.status_updated) - parseInt(a.status_updated))
         .map(trade => {
             return {
@@ -232,13 +246,14 @@ const Trades = ({
 
 
     return <>
-        <h4>{stateTradesFiltered.length} Trades</h4>
+        <h4>{tradesDisplay.length} Trades</h4>
         <select
             onChange={(e) => setFilter(e.target.value)}
             value={filter}
         >
             <option>All Trades</option>
             <option>Trades with Leads</option>
+            <option>Price Check</option>
         </select>
         <div className="trade_search_wrapper">
             {
@@ -246,23 +261,26 @@ const Trades = ({
                     : <h4>Side 1</h4>
             }
             <div>
-                <Search
-                    id={'By Manager'}
-                    sendSearched={(data) => setSearched_Manager(data)}
-                    placeholder={`Manager`}
-                    list={managers_list}
-                />
+                {
+                    filter === 'Price Check' ? null :
 
+                        <Search
+                            id={'By Manager'}
+                            sendSearched={(data) => setSearched_Manager(data)}
+                            placeholder={`Manager`}
+                            list={managers_list}
+                        />
+                }
                 <Search
                     id={'By Player'}
-                    sendSearched={(data) => setSearched_Player(data)}
+                    sendSearched={(data) => filter === 'Price Check' ? setPricecheckPlayer(data) : setSearched_Player(data)}
                     placeholder={`Player`}
                     list={players_list}
                 />
 
             </div>
             {
-                searched_player === '' && searched_manager === '' ? null
+                (searched_player === '' && searched_manager === '') || filter === 'Price Check' ? null
                     :
                     <>
                         <h4>Side 2</h4>

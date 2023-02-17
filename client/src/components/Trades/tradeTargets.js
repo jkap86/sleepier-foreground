@@ -31,7 +31,7 @@ const TradeTargets = ({
         ]
     ]
 
-    const trade_acquisitions_body = trade.tips.acquire.length === 0 ? [{ id: 'NONE', list: [{ text: '-', colSpan: 9 }] }] : trade.tips.acquire.map(add => {
+    const trade_acquisitions_body = !trade.tips?.acquire?.length > 0 ? [{ id: 'NONE', list: [{ text: '-', colSpan: 9 }] }] : trade.tips?.acquire?.map(add => {
 
         return {
             id: `${add.manager.user_id}_${add.player_id}_${add.league.league_id}`,
@@ -59,7 +59,7 @@ const TradeTargets = ({
                 {
                     text: add.league.name,
                     colSpan: 3,
-                    className: 'left',
+                    className: 'left end',
                     image: {
                         src: add.league.avatar,
                         alt: 'league avatar',
@@ -95,7 +95,7 @@ const TradeTargets = ({
         ]
     ]
 
-    const trade_flips_body = trade.tips.trade_away.length === 0 ? [{ id: 'NONE', list: [{ text: '-', colSpan: 9 }] }] : trade.tips.trade_away.map(add => {
+    const trade_flips_body = !trade.tips?.trade_away?.length > 0 ? [{ id: 'NONE', list: [{ text: '-', colSpan: 9 }] }] : trade.tips?.trade_away?.map(add => {
 
         return {
             id: `${add.manager.user_id}_${add.player_id}_${add.league.league_id}`,

@@ -164,9 +164,7 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
                             <td
                                 colSpan={headers[0]?.reduce((acc, cur) => acc + (cur?.colSpan || 0), 0)}
                             >
-                                <img
-                                    className='gif'
-                                    src={tumbleweedgif} />
+                                NO DATA
                             </td>
                         </tr>
                     </tbody>

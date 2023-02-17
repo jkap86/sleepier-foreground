@@ -73,8 +73,8 @@ exports.pricecheck = async (req, res) => {
         .map(trade => trade.dataValues)
         .filter(trade =>
             Object.values(trade.adds).filter(x => x === trade.adds[req.body.player_id]).length === 1
-            && !trade.draft_picks.find(pick => pick.old_user?.user_id === trade.adds[req.body.player_id])
-            && trade.draft_picks.find(pick => pick.old_user)
+            && !trade.draft_picks.find(pick => pick.new_user?.user_id === trade.adds[req.body.player_id])
+
         )
     )
 }
