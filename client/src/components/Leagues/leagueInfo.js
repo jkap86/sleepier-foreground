@@ -116,11 +116,11 @@ const LeagueInfo = ({
     }
 
     const display = active_roster ?
-        secondaryContent === 'Lineup' ? active_roster?.starters
-            : secondaryContent === 'QBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'QB')
-                : secondaryContent === 'RBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'RB')
-                    : secondaryContent === 'WRs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'WR')
-                        : secondaryContent === 'TEs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'TE')
+        secondaryContent === 'Lineup' ? active_roster?.starters || []
+            : secondaryContent === 'QBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'QB') || []
+                : secondaryContent === 'RBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'RB') || []
+                    : secondaryContent === 'WRs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'WR') || []
+                        : secondaryContent === 'TEs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'TE') || []
                             : []
         : []
 
