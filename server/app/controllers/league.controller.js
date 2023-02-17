@@ -67,7 +67,7 @@ exports.create = async (req, res, app) => {
                         userRoster: userRoster
                     }
                 })
-                .filter(league => league.userRoster?.players?.length > 0 || league.drafts.find(d => d.status === 'drafting'))
+                .filter(league => league.userRoster?.players?.length > 0 || league.drafts.find(d => ['drafting', 'paused'].includes(d.status)))
                 .sort((a, b) => a.index - b.index)
         )
 
