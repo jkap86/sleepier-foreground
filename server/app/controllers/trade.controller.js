@@ -28,7 +28,7 @@ exports.find = async (req, res) => {
         })
 
         res.send(trades_db.map(trade => trade.dataValues))
-    } else {
+    } else if (req.body.leaguemate_ids.length > 0) {
         let conditions = []
 
         for (let lm of req.body.leaguemate_ids) {
@@ -48,6 +48,8 @@ exports.find = async (req, res) => {
         TradeCache.set(req.body.user_id, trades_db.map(trade => trade.dataValues.transaction_id), 30 * 60)
 
         res.send(trades_db.map(trade => trade.dataValues))
+    } else {
+        res.send([])
     }
 }
 
