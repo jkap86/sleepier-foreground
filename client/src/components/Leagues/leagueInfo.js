@@ -230,7 +230,7 @@ const LeagueInfo = ({
         <div className="secondary nav">
             <div>
                 {
-                    league.drafts.find(x => x.status !== 'pre_draft' && x.rounds > 10) ?
+                    league.drafts?.find(x => x.status !== 'pre_draft' && x.rounds > 10) ?
                         <Link to={`/picktracker/${league.league_id}`} target='_blank'>
                             Kicker Tracker
                         </Link>

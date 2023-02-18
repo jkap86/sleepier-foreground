@@ -28,21 +28,19 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
                         : 0
 
                 let matchups = {};
-                if (sync || state.league_season === season) {
-
-                    await Promise.all(Array.from(Array(weeks).keys()).map(async key => {
-                        let matchups_prev_week;
-                        try {
-                            matchups_prev_week = await axios.get(`https://api.sleeper.app/v1/league/${league_to_add}/matchups/${key + 1}`)
-                        } catch (error) {
-                            console.log({
-                                code: error.code,
-                                message: error.message,
-                                stack: error.stack
-                            })
-                        }
-                        matchups[`matchups_${key + 1}`] = matchups_prev_week?.data || []
-                    }))
+                if ((sync || state.league_season === season) && ['off', 'pre', 'regular'].includes(state.season_type)) {
+                    const week = state.season_type === 'regular' ? state.week : 1
+                    let matchups_prev_week;
+                    try {
+                        matchups_prev_week = await axios.get(`https://api.sleeper.app/v1/league/${league_to_add}/matchups/${week}`)
+                    } catch (error) {
+                        console.log({
+                            code: error.code,
+                            message: error.message,
+                            stack: error.stack
+                        })
+                    }
+                    matchups[`matchups_${week}`] = matchups_prev_week?.data || []
                 }
 
                 if (league.data) {
@@ -200,7 +198,7 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
                                 rounds: draft.settings.rounds,
                                 draft_order: draft.draft_order
                             }
-                        }),
+                        }) || [],
                         updatedAt: Date.now()
                     }
 
