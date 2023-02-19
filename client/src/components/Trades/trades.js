@@ -18,6 +18,7 @@ const Trades = ({
     const [searched_manager2, setSearched_Manager2] = useState('')
     const [searched_player, setSearched_Player] = useState('')
     const [searched_player2, setSearched_Player2] = useState('')
+    const [searched_league, setSearched_League] = useState('')
     const [filter, setFilter] = useState('All Trades')
     const [pricecheckTrades, setPricecheckTrades] = useState({})
     const [pricecheckPlayer, setPricecheckPlayer] = useState('')
@@ -84,11 +85,20 @@ const Trades = ({
                 )
             }
 
+            if (searched_league === '') {
+                trades_filtered3 = trades_filtered2
+            } else {
+                trades_filtered3 = trades_filtered2.filter(t =>
+                    t.tips.acquire.map(add => add.league.league_id).includes(searched_league.id)
+                    || t.tips.trade_away.map(drop => drop.league.league_id).includes(searched_league.id)
+                )
+            }
+
             setStateTradesFiltered([...trades_filtered3])
         }
 
         filterTrades()
-    }, [stateTrades, searched_player, searched_manager, searched_player2, filter])
+    }, [stateTrades, searched_player, searched_manager, searched_player2, searched_league, filter])
 
 
     const trades_headers = [
@@ -245,6 +255,36 @@ const Trades = ({
     })
 
 
+    let leagues_list = {}
+
+    stateTradesFiltered
+        .map(trade => {
+            trade.tips.acquire.map(add => {
+                leagues_list[add.league.league_id] = {
+                    id: add.league.league_id,
+                    text: add.league.name,
+                    image: {
+                        src: add.league.avatar,
+                        alt: 'league avatar',
+                        type: 'league'
+                    }
+                }
+            })
+            trade.tips.trade_away.map(drop => {
+                leagues_list[drop.league.league_id] = {
+                    id: drop.league.league_id,
+                    text: drop.league.name,
+                    image: {
+                        src: drop.league.avatar,
+                        alt: 'league avatar',
+                        type: 'league'
+                    }
+                }
+            })
+        })
+
+    leagues_list = Object.values(leagues_list)
+
     return <>
         <h4>{tradesDisplay.length} Trades</h4>
         <select
@@ -256,10 +296,6 @@ const Trades = ({
             <option>Price Check</option>
         </select>
         <div className="trade_search_wrapper">
-            {
-                searched_player === '' && searched_manager === '' ? null
-                    : <h4>Side 1</h4>
-            }
             <div>
                 {
                     filter === 'Price Check' ? null :
@@ -280,29 +316,25 @@ const Trades = ({
 
             </div>
             {
-                (searched_player === '' && searched_manager === '') || filter === 'Price Check' ? null
-                    :
-                    <>
-                        <h4>Side 2</h4>
-                        <div>
-                            {searched_manager === '' ? null :
-                                <Search
-                                    id={'By Manager2'}
-                                    sendSearched={(data) => setSearched_Manager2(data)}
-                                    placeholder={`Manager`}
-                                    list={managers_list}
-                                />
-                            }
-                            {searched_player === '' ? null :
-                                <Search
-                                    id={'By Player2'}
-                                    sendSearched={(data) => setSearched_Player2(data)}
-                                    placeholder={`Player`}
-                                    list={players_list}
-                                />
-                            }
-                        </div>
-                    </>
+                filter === 'Trades with Leads' ?
+                    <div>
+
+                        <Search
+                            id={'By League'}
+                            sendSearched={(data) => setSearched_League(data)}
+                            placeholder={`League`}
+                            list={leagues_list}
+                        />
+                    </div>
+                    : null
+            }
+            {
+                filter === 'Trades with Leads' ?
+                    <h2>Filtered Leaguemate trades for Potential Acquisitions/Flips</h2>
+                    : filter === 'Price Check'
+                        ? <h2>All trades with only that player on one side</h2>
+                        : <h2>All Leaguemate Trades</h2>
+
             }
 
         </div>
