@@ -180,7 +180,15 @@ const Trades = ({
                                 text: <ol>
                                     {
                                         Object.keys(trade.drops || {}).filter(d => trade.drops[d] === roster?.user_id).map(player_id =>
-                                            <li>- {stateAllPlayers[player_id]?.full_name}</li>
+
+                                            <li className="end">
+                                                <span className='end'>
+                                                    {
+                                                        (`- ${stateAllPlayers[player_id]?.full_name}`).toString()
+                                                    }
+                                                </span>
+                                            </li>
+
                                         )
                                     }
                                     {
@@ -189,9 +197,11 @@ const Trades = ({
                                             .sort((a, b) => (a.season) - b.season || a.round - b.round)
                                             .map(pick =>
                                                 <li className="end">
-                                                    <span>{
-                                                        `- ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
-                                                    }</span>
+                                                    <span className="end">
+                                                        {
+                                                            (`- ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`).toString()
+                                                        }
+                                                    </span>
                                                 </li>
                                             )
                                     }

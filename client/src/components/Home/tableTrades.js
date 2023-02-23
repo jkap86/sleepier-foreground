@@ -104,17 +104,16 @@ const TableTrades = ({ id, type, headers, body, page, setPage, itemActive, setIt
                         ?.slice(Math.max(((page || 1) - 1) * 25, 0), (((page || 1) - 1) * 25) + 25)
                         ?.map((item, index) =>
                             <React.Fragment key={item.id}>
-                                <tbody
-                                    className={itemActive === item.id ? 'active trade_row' : 'trade_row'}
-                                >
-                                    {
-                                        item.list.map((list_item, index) =>
-                                            <tr className={`${type}_wrapper ${itemActive === item.id ? 'active' : ''}`}>
-                                                <td
-                                                    colSpan={list_item.reduce((acc, cur) => acc + (cur.colSpan || 0), 0)}
-                                                >
-                                                    <table className={`${type}_body`}>
-                                                        <tbody>
+                                <tbody className={itemActive === item.id ? 'active' : ''}>
+                                    <tr className={`${type}_wrapper ${itemActive === item.id ? 'active' : ''}`} >
+                                        <td
+                                            colSpan={headers[0].reduce((acc, cur) => acc + (cur.colSpan || 0), 0)}
+                                        >
+                                            <table className={`${type}_body`}>
+                                                <tbody>
+                                                    {
+                                                        item.list.map((list_item, index) =>
+
                                                             <tr
                                                                 className={`${type} click ${itemActive === item.id ? 'active' : ''}`}
                                                                 onClick={setItemActive ? () => setItemActive(prevState => prevState === item.id ? '' : item.id) : null}
@@ -145,22 +144,23 @@ const TableTrades = ({ id, type, headers, body, page, setPage, itemActive, setIt
                                                                         )
                                                                 }
                                                             </tr>
-
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        )
-                                    }
-                                    {
-                                        (itemActive !== item.id || !item.secondary_table) ? null :
-                                            <tr className={`${type}2 click ${itemActive === item.id ? 'active' : ''}`}
-                                            >
-                                                <td colSpan={item.list[0].reduce((acc, cur) => acc + cur.colSpan, 0)}>
-                                                    {item.secondary_table}
-                                                </td>
-                                            </tr>
-                                    }
+                                                        )
+                                                    }
+                                                </tbody>
+                                                <tbody>
+                                                    {
+                                                        (itemActive !== item.id || !item.secondary_table) ? null :
+                                                            <tr className={`${type}2 click ${itemActive === item.id ? 'active' : ''}`}
+                                                            >
+                                                                <td colSpan={item.list[0].reduce((acc, cur) => acc + cur.colSpan, 0)}>
+                                                                    {item.secondary_table}
+                                                                </td>
+                                                            </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </React.Fragment>
                         )

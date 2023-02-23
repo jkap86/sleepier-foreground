@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { filterLeagues } from '../Functions/filterData';
 import Heading from "./heading";
@@ -21,7 +21,6 @@ const View = ({
     stateTrades
 }) => {
     const params = useParams();
-    const navigate = useNavigate();
     const [tab, setTab] = useState('Trades');
     const [type1, setType1] = useState('All');
     const [type2, setType2] = useState('All');
@@ -105,23 +104,6 @@ const View = ({
         <Link to="/" className="home">
             Home
         </Link>
-        <select
-            className="view click"
-            defaultValue={params.season}
-            onChange={(e) => navigate(`/${params.username}/${e.target.value}`)}
-        >
-            {
-                Array.from(Array(new Date().getFullYear() - 2017).keys())
-                    .sort((a, b) => b - a)
-                    .map(s =>
-                        <option
-                            key={s}
-                        >
-                            {s + 2018}
-                        </option>
-                    )
-            }
-        </select>
         <Heading
             stateState={stateState}
             state_user={state_user}

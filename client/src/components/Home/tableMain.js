@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import './css/tableMain.css';
 import { avatar } from '../Functions/misc';
-import tumbleweedgif from '../../images/tumbleweed.gif';
+
 import Search from './search';
 
 const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItemActive, caption, search, searched, setSearched, options }) => {

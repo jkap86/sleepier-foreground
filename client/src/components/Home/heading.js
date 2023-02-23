@@ -1,6 +1,7 @@
 import { avatar } from '../Functions/misc';
 import React, { useEffect, useState } from "react";
-
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import './css/heading.css';
 
 const Heading = ({
     stateState,
@@ -13,9 +14,29 @@ const Heading = ({
     type2,
     setType2
 }) => {
+    const params = useParams();
+    const navigate = useNavigate();
+
 
     return <>
         <div className="heading">
+            <select
+                className="view click"
+                defaultValue={params.season}
+                onChange={(e) => navigate(`/${params.username}/${e.target.value}`)}
+            >
+                {
+                    Array.from(Array(new Date().getFullYear() - 2017).keys())
+                        .sort((a, b) => b - a)
+                        .map(s =>
+                            <option
+                                key={s}
+                            >
+                                {s + 2018}
+                            </option>
+                        )
+                }
+            </select>
             <h1>
                 <p className="image">
                     {

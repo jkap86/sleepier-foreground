@@ -1,0 +1,242 @@
+table.main>thead {
+    position: sticky;
+    top: var(--sticky1);
+    z-index: 8;
+}
+
+tr.main.active td {
+    position: sticky;
+    top: var(--sticky2);
+    z-index: 7;
+}
+
+table.secondary>thead {
+    position: sticky;
+    top: var(--sticky3);
+    z-index: 6;
+}
+
+ol.page_numbers {
+    display: flex;
+    font-size: 3rem;
+    width: fit-content;
+    max-width: 80%;
+    margin: auto;
+    padding: 1rem 0;
+    background-color: var(--color1);
+    overflow: auto;
+    filter: drop-shadow(0 0 .25rem white);
+}
+
+ol.page_numbers>li {
+    margin: 0 1rem;
+    border: ridge .1rem var(--color4);
+    padding: 2rem;
+    opacity: .25;
+}
+
+ol.page_numbers>li.active {
+    filter: brightness(2);
+    color: var(--color2);
+    border: ridge .1rem var(--color2);
+    opacity: 1;
+}
+
+th {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+thead {
+    filter: drop-shadow(0 0rem 1rem white);
+}
+
+table.main th {
+    background-image: radial-gradient(black 0%, white 500%);
+}
+
+table.secondary th {
+    background-image: radial-gradient(black 0%, royalblue 500%);
+}
+
+table.tertiary th {
+    background-image: radial-gradient(black 0%, blueviolet 500%);
+}
+
+table.main {
+    font-size: 3rem;
+    width: 100%;
+    outline: 1rem solid black;
+}
+
+tr.main_wrapper td {
+    background-image: radial-gradient(black -100%, darkgray 500%);
+    text-shadow: 0 0 1rem black;
+}
+
+tr.secondary td {
+    background-image: radial-gradient(black -100%, royalblue 500%);
+}
+
+tr.tertiary td {
+    background-image: radial-gradient(black -100%, blueviolet 500%);
+}
+
+tr.main.active td,
+tr.secondary.active td {
+    background-image: radial-gradient(var(--color4) -100%, var(--color2) 250%);
+    filter: saturate(1.5);
+
+}
+
+
+thead>tr:nth-of-type(1) {
+    height: 3.5rem;
+}
+
+thead>tr:nth-of-type(2) {
+    height: 3.5rem;
+}
+
+thead>tr:only-of-type {
+    height: 7rem;
+}
+
+
+th.small,
+td.small {
+    font-size: 80%;
+    white-space: initial;
+}
+
+
+td {
+    background-color: var(--color4);
+    height: 7rem;
+}
+
+table.secondary td {
+    background-color: black;
+}
+
+
+
+tr.main.active>td {
+    background-color: transparent;
+}
+
+tr.secondary.active {
+
+    z-index: 5;
+    position: sticky;
+    top: 21rem;
+}
+
+
+table.secondary.subs,
+table.secondary.lineup {
+    position: sticky;
+    top: 14rem;
+}
+
+table.tertiary.subs {
+    position: sticky;
+    top: 28rem;
+}
+
+table.secondary.subs,
+table.secondary.lineup,
+table.tertiary.subs {
+    display: inline-table;
+    width: 50%;
+    vertical-align: top;
+}
+
+table.secondary.lineup {
+    border: .05rem solid var(--color2);
+
+}
+
+div.secondary.nav,
+div.secondary.nav>div {
+    height: 7rem;
+    display: flex;
+    justify-content: space-evenly;
+    margin: auto;
+    overflow: auto;
+}
+
+
+div.secondary.nav>div {
+    width: 50%;
+    background-color: var(--color4);
+
+}
+
+div.nav {
+    background-color: black;
+}
+
+div.nav>div>button,
+div.nav>button {
+    background-color: transparent;
+    font-family: 'Ubuntu Mono', sans-serif;
+    font-size: 3rem;
+    padding: .25rem;
+    border: .25rem solid transparent;
+    color: white;
+    opacity: .75;
+}
+
+div.nav>div>button.active,
+div.nav>button.active {
+    color: var(--color2);
+    opacity: 1;
+    border: .25rem solid var(--color2);
+
+}
+
+/* Trades Table */
+
+
+
+table#trades tbody.active table.main_body>tbody>tr.main.active td {
+    position: sticky;
+    top: 14rem;
+    height: 7rem;
+    box-sizing: border-box;
+    z-index: 4;
+}
+
+table#trades tbody.active table.main_body>tbody>tr.main.active:first-of-type td {
+    position: sticky;
+    top: 7rem;
+    height: 7rem;
+    box-sizing: border-box;
+    z-index: 7;
+}
+
+table#trades tr.main2.active td {
+    position: sticky;
+    top: 14rem;
+    z-index: 5;
+}
+
+table#trades {
+    border-spacing: 1rem;
+    border-collapse: unset;
+}
+
+table#trades tr.main_wrapper {
+    filter: drop-shadow(0 0 .5rem var(--color2));
+}
+
+table#trades tbody.active table.main_body>tbody>tr.main:first-of-type td {
+    background-color: black;
+}
+
+ol {
+    padding: 0;
+    white-space: nowrap;
+    position: relative;
+}
