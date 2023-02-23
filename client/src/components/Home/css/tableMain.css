@@ -119,12 +119,6 @@ table.secondary td {
     background-color: black;
 }
 
-
-
-tr.main.active>td {
-    background-color: transparent;
-}
-
 tr.secondary.active {
 
     z-index: 5;
@@ -198,7 +192,10 @@ div.nav>button.active {
 
 /* Trades Table */
 
-
+table#trades {
+    border-collapse: separate;
+    border-spacing: 0 2.5rem;
+}
 
 table#trades tbody.active table.main_body>tbody>tr.main.active td {
     position: sticky;
@@ -206,6 +203,7 @@ table#trades tbody.active table.main_body>tbody>tr.main.active td {
     height: 7rem;
     box-sizing: border-box;
     z-index: 4;
+    filter: drop-shadow(0 0 1.5rem var(--color2))
 }
 
 table#trades tbody.active table.main_body>tbody>tr.main.active:first-of-type td {
@@ -222,18 +220,15 @@ table#trades tr.main2.active td {
     z-index: 5;
 }
 
-table#trades {
-    border-spacing: 1rem;
-    border-collapse: unset;
+table#trades>tbody {
+    filter: drop-shadow(0 0 1rem var(--color2));
 }
 
-table#trades tr.main_wrapper {
-    filter: drop-shadow(0 0 .5rem var(--color2));
+table#trades tbody table.main_body>tbody>tr.main td {
+    filter: drop-shadow(0 0 1.5rem var(--color4));
 }
 
-table#trades tbody.active table.main_body>tbody>tr.main:first-of-type td {
-    background-color: black;
-}
+
 
 ol {
     padding: 0;
