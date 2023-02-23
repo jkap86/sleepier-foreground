@@ -239,3 +239,73 @@ export const getLineupCheck = (matchup, league, stateAllPlayers) => {
     }
 }
 
+export const getTradeTips = (trades, leagues, leaguemates) => {
+    let trade_tips = trades.map(trade => {
+
+        let trade_away = []
+
+
+        Object.keys(trade.adds || {}).map(add => {
+            const lm_user_id = trade.adds[add]
+
+            return leagues
+                .filter(league =>
+                    league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
+                    && league.userRoster.players?.includes(add)
+                    && league.league_id !== trade.league.league_id
+                )
+                .map(league => {
+                    return trade_away.push({
+                        player_id: add,
+                        manager: {
+                            user_id: lm_user_id,
+                            username: leaguemates[lm_user_id]?.username,
+                            avatar: leaguemates[lm_user_id]?.avatar
+                        },
+                        league: {
+                            league_id: league.league_id,
+                            name: league.name,
+                            avatar: league.avatar
+                        }
+                    })
+                })
+        })
+
+        let acquire = []
+
+        Object.keys(trade.drops || {}).map(drop => {
+            const lm_user_id = trade.drops[drop]
+
+            return leagues
+                .filter(league =>
+                    league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
+                    && league.rosters?.find(r => r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id))?.players?.includes(drop)
+                    && league.league_id !== trade.league.league_id
+                )
+                .map(league => {
+                    return acquire.push({
+                        player_id: drop,
+                        manager: {
+                            user_id: lm_user_id,
+                            username: leaguemates[lm_user_id]?.username,
+                            avatar: leaguemates[lm_user_id]?.avatar
+                        },
+                        league: {
+                            league_id: league.league_id,
+                            name: league.name,
+                            avatar: league.avatar
+                        }
+                    })
+                })
+        })
+
+        return {
+            ...trade,
+            tips: {
+                acquire: acquire,
+                trade_away: trade_away
+            }
+        }
+    })
+    return trade_tips
+}

@@ -74,7 +74,7 @@ const Heading = ({
                 </div>
             </div>
             <h2>
-                {tab === 'Trades' ? `${stateState.league_season} Leaguemate Trades` : `${stateLeaguesFiltered.length} Leagues`}
+                {tab === 'Trades' ? null : `${stateLeaguesFiltered.length} Leagues`}
             </h2>
         </div>
     </>

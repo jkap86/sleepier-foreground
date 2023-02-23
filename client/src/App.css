@@ -17,7 +17,7 @@ html {
   width: 100vw;
   font-family: 'Ubuntu Mono', sans-serif;
   padding-bottom: 25rem;
-  overflow: auto;
+  overflow-x: hidden;
 }
 
 a {
@@ -74,7 +74,7 @@ table {
   margin: auto;
   width: 100%;
   border-collapse: collapse;
-
+  border-spacing: 0;
   max-width: 1250px;
 }
 
@@ -133,11 +133,13 @@ span.end {
 
 select {
   background-color: transparent;
-  font-size: 3rem;
-  height: 7rem;
-  color: var(--color2);
+  font-size: inherit;
+  padding: 1rem;
+  padding-right: 0;
+  color: inherit;
   text-align: center;
   font-family: inherit;
+  border: none;
 }
 
 div {

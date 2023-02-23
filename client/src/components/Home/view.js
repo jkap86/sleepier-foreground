@@ -18,7 +18,8 @@ const View = ({
     stateLeaguemates,
     statePlayerShares,
     stateMatchups,
-    stateTrades
+    stateTrades,
+    stateLeaguemateIds
 }) => {
     const params = useParams();
     const [tab, setTab] = useState('Trades');
@@ -93,6 +94,8 @@ const View = ({
                 stateAllPlayers={stateAllPlayers}
                 state_user={state_user}
                 propTrades={stateTrades}
+                stateLeaguemateIds={stateLeaguemateIds}
+                stateLeagues={stateLeagues}
             />
             break;
         default:

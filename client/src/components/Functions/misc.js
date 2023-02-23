@@ -134,3 +134,10 @@ export const team_abbrev = {
     NOS: 'NO'
 }
 
+export const getMonthName = (monthIndex) => {
+    const date = new Date();
+    date.setMonth(monthIndex);
+
+    return date.toLocaleString('en-US', { month: 'short' });
+}
+

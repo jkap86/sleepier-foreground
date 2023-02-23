@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { loadingIcon } from '../Functions/misc';
-import { getLeagueData } from '../Functions/loadData';
+import { getLeagueData, getTradeTips } from '../Functions/loadData';
 import View from "./view";
 
 const Main = () => {
@@ -16,6 +16,7 @@ const Main = () => {
     const [statePlayerShares, setStatePlayerShares] = useState([]);
     const [stateMatchups, setStateMatchups] = useState([]);
     const [stateTrades, setStateTrades] = useState([]);
+    const [stateLeaguemateIds, setStateLeaguemateIds] = useState([])
 
     useEffect(() => {
         const fetchLeagues = async () => {
@@ -50,77 +51,12 @@ const Main = () => {
                 })
 
 
-                const trade_finds = trades.data
-                    .map(trade => {
+                const trade_finds = getTradeTips(trades.data, leagues.data, leaguemates)
 
-                        let trade_away = []
-
-
-                        Object.keys(trade.adds || {}).map(add => {
-                            const lm_user_id = trade.adds[add]
-
-                            return leagues.data
-                                .filter(league =>
-                                    league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
-                                    && league.userRoster.players?.includes(add)
-                                    && league.league_id !== trade.league.league_id
-                                )
-                                .map(league => {
-                                    return trade_away.push({
-                                        player_id: add,
-                                        manager: {
-                                            user_id: lm_user_id,
-                                            username: leaguemates[lm_user_id]?.username,
-                                            avatar: leaguemates[lm_user_id]?.avatar
-                                        },
-                                        league: {
-                                            league_id: league.league_id,
-                                            name: league.name,
-                                            avatar: league.avatar
-                                        }
-                                    })
-                                })
-                        })
-
-                        let acquire = []
-
-                        Object.keys(trade.drops || {}).map(drop => {
-                            const lm_user_id = trade.drops[drop]
-
-                            return leagues.data
-                                .filter(league =>
-                                    league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
-                                    && league.rosters?.find(r => r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id))?.players?.includes(drop)
-                                    && league.league_id !== trade.league.league_id
-                                )
-                                .map(league => {
-                                    return acquire.push({
-                                        player_id: drop,
-                                        manager: {
-                                            user_id: lm_user_id,
-                                            username: leaguemates[lm_user_id]?.username,
-                                            avatar: leaguemates[lm_user_id]?.avatar
-                                        },
-                                        league: {
-                                            league_id: league.league_id,
-                                            name: league.name,
-                                            avatar: league.avatar
-                                        }
-                                    })
-                                })
-                        })
-
-                        return {
-                            ...trade,
-                            tips: {
-                                acquire: acquire,
-                                trade_away: trade_away
-                            }
-                        }
-                    })
 
 
                 setStateTrades(trade_finds)
+                setStateLeaguemateIds(leaguemates)
 
                 setStateLeagues(leagues.data)
 
@@ -142,7 +78,6 @@ const Main = () => {
         fetchLeagues()
     }, [params.username, params.season])
 
-
     return <>
         {
             isLoading || !state_user ?
@@ -162,6 +97,7 @@ const Main = () => {
                         statePlayerShares={statePlayerShares}
                         stateMatchups={stateMatchups}
                         stateTrades={stateTrades}
+                        stateLeaguemateIds={stateLeaguemateIds}
                     />
                 </React.Suspense>
 

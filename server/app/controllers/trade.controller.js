@@ -14,21 +14,8 @@ const NodeCache = require('node-cache');
 const TradeCache = new NodeCache;
 
 exports.find = async (req, res) => {
-    const trades_cache = TradeCache.get(req.body.user_id)
 
-    if (trades_cache) {
-        console.log('GETTING TRADES FROM CACHE...')
-
-        const trades_db = await Trades.findAll({
-            where: {
-                transaction_id: {
-                    [Op.in]: trades_cache
-                }
-            }
-        })
-
-        res.send(trades_db.map(trade => trade.dataValues))
-    } else if (req.body.leaguemate_ids.length > 0) {
+    if (req.body.leaguemate_ids.length > 0) {
         let conditions = []
 
         for (let lm of req.body.leaguemate_ids) {
@@ -37,17 +24,57 @@ exports.find = async (req, res) => {
             })
         }
 
-        const trades_db = await Trades.findAll({
-            where: {
-                managers: {
-                    [Op.or]: conditions
+
+
+        let now = new Date()
+
+
+        if (req.body.month) {
+            now.setMonth(req.body.month)
+        }
+
+        const month = now.getMonth()
+        now.setDate(1)
+        now.setHours(0)
+        now.setMinutes(0)
+        now.setSeconds(0)
+        now.setMilliseconds(0)
+        const start = new Date(now).getTime()
+        now.setMonth(month + 1)
+        const end = new Date(now).getTime()
+
+
+
+
+        try {
+            const trades_db = await Trades.findAll({
+                where: {
+                    [Op.and]: [
+                        {
+                            managers: {
+                                [Op.or]: conditions
+                            }
+                        },
+                        {
+                            status_updated: {
+                                [Op.gt]: start.toString()
+                            }
+                        },
+                        {
+                            status_updated: {
+                                [Op.lt]: end.toString()
+                            }
+                        }
+                    ]
                 }
-            }
-        })
+            })
 
-        TradeCache.set(req.body.user_id, trades_db.map(trade => trade.dataValues.transaction_id), 30 * 60)
+            console.log(`${trades_db.length} TRADES...`)
 
-        res.send(trades_db.map(trade => trade.dataValues))
+            res.send(trades_db.map(trade => trade.dataValues))
+        } catch (error) {
+            console.log(error)
+        }
     } else {
         res.send([])
     }
