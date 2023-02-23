@@ -47,6 +47,7 @@ input.home {
 
 select.home {
     width: fit-content;
+    height: fit-content;
     margin: auto;
 }
 
