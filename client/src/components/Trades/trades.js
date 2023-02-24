@@ -6,6 +6,7 @@ import Search from "../Home/search";
 import TradeInfo from "./tradeInfo";
 import { getMonthName } from '../Functions/misc';
 import { getTradeTips } from '../Functions/loadData';
+import TableMain from '../Home/tableMain';
 
 const Trades = ({
     stateState,
@@ -160,95 +161,116 @@ const Trades = ({
             return {
                 id: trade.transaction_id,
                 list: [
-                    [
-                        {
-                            text: new Date(parseInt(trade.status_updated)).toLocaleDateString('en-US') + ' ' + new Date(parseInt(trade.status_updated)).toLocaleTimeString('en-US', { hour: "2-digit", minute: "2-digit" }),
-                            colSpan: 2,
-                            className: 'small'
-                        },
-                        {
-                            text: trade.league.name,
-                            colSpan: 6,
 
-                            image: {
-                                src: trade.league.avatar,
-                                alt: 'league avatar',
-                                type: 'league'
-                            }
-                        },
-                    ],
-                    ...trade.managers.map(m => {
-                        const roster = trade.rosters?.find(r => r.user_id === m || r.co_owners?.find(co => co.user_id === m))
-                        return [
+                    {
+                        text: <TableMain
+                            type={'trade_summary'}
+                            headers={[]}
+                            body={
+                                [
+                                    {
+                                        id: 'title',
+                                        list: [
+                                            {
+                                                text: new Date(parseInt(trade.status_updated)).toLocaleDateString('en-US') + ' ' + new Date(parseInt(trade.status_updated)).toLocaleTimeString('en-US', { hour: "2-digit", minute: "2-digit" }),
+                                                colSpan: 2,
+                                                className: 'small'
+                                            },
+                                            {
+                                                text: trade.league.name,
+                                                colSpan: 6,
 
-                            {
-                                text: roster?.username || 'Orphan',
-                                colSpan: 2,
-                                className: 'left',
-                                image: {
-                                    src: roster?.avatar,
-                                    alt: 'user avatar',
-                                    type: 'user'
-                                }
-                            },
-                            {
-                                text: <ol>
-                                    {
-                                        Object.keys(trade.adds || {}).filter(a => trade.adds[a] === roster?.user_id).map(player_id =>
-                                            <li>+ {stateAllPlayers[player_id]?.full_name}</li>
-                                        )
-                                    }
-                                    {
-                                        trade.draft_picks
-                                            .filter(p => p.owner_id === roster?.roster_id)
-                                            .sort((a, b) => (a.season) - b.season || a.round - b.round)
-                                            .map(pick =>
-                                                <li>
-                                                    {
-                                                        `+ ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
+                                                image: {
+                                                    src: trade.league.avatar,
+                                                    alt: 'league avatar',
+                                                    type: 'league'
+                                                }
+                                            },
+                                        ]
+                                    },
+                                    ...trade.managers.map(m => {
+                                        const roster = trade.rosters?.find(r => r.user_id === m || r.co_owners?.find(co => co.user_id === m))
+                                        return {
+                                            id: m,
+                                            list: [
+
+                                                {
+                                                    text: roster?.username || 'Orphan',
+                                                    colSpan: 2,
+                                                    className: 'left',
+                                                    image: {
+                                                        src: roster?.avatar,
+                                                        alt: 'user avatar',
+                                                        type: 'user'
                                                     }
-                                                </li>
-                                            )
-                                    }
-                                </ol>,
-                                colSpan: 3,
-                                className: 'small left'
-                            },
-                            {
-                                text: <ol>
-                                    {
-                                        Object.keys(trade.drops || {}).filter(d => trade.drops[d] === roster?.user_id).map(player_id =>
-
-                                            <li className="end">
-                                                <span className='end'>
-                                                    {
-                                                        (`- ${stateAllPlayers[player_id]?.full_name}`).toString()
-                                                    }
-                                                </span>
-                                            </li>
-
-                                        )
-                                    }
-                                    {
-                                        trade.draft_picks
-                                            .filter(p => p.previous_owner_id === roster?.roster_id)
-                                            .sort((a, b) => (a.season) - b.season || a.round - b.round)
-                                            .map(pick =>
-                                                <li className="end">
-                                                    <span className="end">
+                                                },
+                                                {
+                                                    text: <ol>
                                                         {
-                                                            (`- ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`).toString()
+                                                            Object.keys(trade.adds || {}).filter(a => trade.adds[a] === roster?.user_id).map(player_id =>
+                                                                <li>+ {stateAllPlayers[player_id]?.full_name}</li>
+                                                            )
                                                         }
-                                                    </span>
-                                                </li>
-                                            )
-                                    }
-                                </ol>,
-                                colSpan: 3,
-                                className: 'small left'
+                                                        {
+                                                            trade.draft_picks
+                                                                .filter(p => p.owner_id === roster?.roster_id)
+                                                                .sort((a, b) => (a.season) - b.season || a.round - b.round)
+                                                                .map(pick =>
+                                                                    <li>
+                                                                        {
+                                                                            `+ ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`
+                                                                        }
+                                                                    </li>
+                                                                )
+                                                        }
+                                                    </ol>,
+                                                    colSpan: 3,
+                                                    className: 'small left'
+                                                },
+                                                {
+                                                    text: <ol>
+                                                        {
+                                                            Object.keys(trade.drops || {}).filter(d => trade.drops[d] === roster?.user_id).map(player_id =>
+
+                                                                <li className="end">
+                                                                    <span className='end'>
+                                                                        {
+                                                                            (`- ${stateAllPlayers[player_id]?.full_name}`).toString()
+                                                                        }
+                                                                    </span>
+                                                                </li>
+
+                                                            )
+                                                        }
+                                                        {
+                                                            trade.draft_picks
+                                                                .filter(p => p.previous_owner_id === roster?.roster_id)
+                                                                .sort((a, b) => (a.season) - b.season || a.round - b.round)
+                                                                .map(pick =>
+                                                                    <li className="end">
+                                                                        <span className="end">
+                                                                            {
+                                                                                (`- ${pick.season} Round ${pick.round}${pick.order && pick.season === params.season ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` (${pick.original_user?.username || 'Orphan'})`}`).toString()
+                                                                            }
+                                                                        </span>
+                                                                    </li>
+                                                                )
+                                                        }
+                                                    </ol>,
+                                                    colSpan: 3,
+                                                    className: 'small left'
+                                                }
+                                            ]
+                                        }
+                                    })
+
+                                ]
                             }
-                        ]
-                    })
+                        />,
+                        colSpan: 8,
+                        className: 'small'
+                    }
+
                 ],
                 secondary_table: (
                     <TradeInfo
@@ -402,7 +424,7 @@ const Trades = ({
             }
 
         </div>
-        <TableTrades
+        <TableMain
             id={'trades'}
             type={'main'}
             headers={trades_headers}

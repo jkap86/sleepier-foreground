@@ -201,9 +201,8 @@ select.trades {
     font-family: inherit;
 }
 
-table#trades {
-    border-collapse: separate;
-    border-spacing: 0 2.5rem;
+table.trade_summary {
+    box-shadow: 0 0 5rem var(--color2);
 }
 
 table#trades tbody.active table.main_body>tbody>tr.main.active td {
