@@ -85,7 +85,7 @@ tr.tertiary td {
 tr.main.active td,
 tr.secondary.active td {
     background-image: radial-gradient(var(--color4) -100%, var(--color2) 250%);
-    filter: saturate(1.5);
+
 
 }
 
@@ -105,7 +105,7 @@ thead>tr:only-of-type {
 
 th.small,
 td.small {
-    font-size: 80%;
+    font-size: 90%;
     white-space: initial;
 }
 
