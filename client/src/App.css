@@ -8,16 +8,19 @@ html {
   --sticky3: 14rem;
   font-size: 1vmin;
   background-color: var(--color1);
+
+  text-align: center;
+  color: white;
+
+  overflow-x: hidden;
+  padding-bottom: 25rem;
+
 }
 
 .App {
-  text-align: center;
-  color: white;
-  height: 100vh;
-  width: 100vw;
   font-family: 'Ubuntu Mono', sans-serif;
-  padding-bottom: 25rem;
-  overflow-x: hidden;
+  width: 100%;
+  margin: auto;
 }
 
 a {
@@ -98,7 +101,7 @@ table {
   height: 3rem;
 }
 
-.left p:hover,
+.left:hover p,
 .left li:hover,
 .left li.end:hover {
   overflow: visible;
@@ -120,7 +123,7 @@ table {
 }
 
 
-li.end:hover {
+.end:hover {
   direction: rtl;
 
 }
@@ -153,10 +156,16 @@ h1.loading {
   width: 90rem;
   height: 90rem;
   margin: auto;
+  vertical-align: middle;
 }
 
 div.loading {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
   height: 100%;
   width: 100%;
   display: flex;

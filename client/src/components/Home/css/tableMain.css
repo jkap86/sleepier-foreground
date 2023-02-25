@@ -78,7 +78,8 @@ tr.secondary td {
     background-image: radial-gradient(black -100%, royalblue 500%);
 }
 
-tr.tertiary td {
+tr.tertiary td,
+tr.secondary.lineup td {
     background-image: radial-gradient(black -100%, blueviolet 500%);
 }
 

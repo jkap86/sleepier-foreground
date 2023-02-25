@@ -135,7 +135,7 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
                                                                                             key.image.src, key.image.alt, key.image.type
                                                                                         )
                                                                                     }
-                                                                                    {key.text}
+                                                                                    <span>{key.text}</span>
                                                                                 </p>
                                                                                 :
                                                                                 key.text

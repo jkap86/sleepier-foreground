@@ -4,7 +4,7 @@ a.home {
     font-weight: 600;
     font-size: 3rem;
     display: block;
-    width: 100%;
+    width: fit-content;
     text-align: left;
     padding: 2rem 0 0 2rem;
     margin: 0;
@@ -30,10 +30,11 @@ div.navbar {
     width: fit-content;
     background-color: transparent;
     filter: brightness(2);
+    margin: auto;
 }
 
 div.switch_wrapper {
-    max-width: 100rem;
+    max-width: 100%;
     padding: 1rem 0;
     justify-content: space-evenly;
     box-sizing: border-box;
@@ -131,7 +132,9 @@ button.sw.active {
 
 h2 {
     font-size: 3rem;
-    margin: 1rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 h4 {
