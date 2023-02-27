@@ -115,7 +115,7 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
                                             <table className={`${type}_body`}>
                                                 <tbody>
                                                     <tr
-                                                        className={`${type} click ${itemActive === item.id ? 'active' : ''}`}
+                                                        className={`${type} click ${itemActive === item.id ? 'active' : ''} ${index === 0 ? 'sticky' : ''}`}
                                                         onClick={setItemActive ? () => setItemActive(prevState => prevState === item.id ? '' : item.id) : null}
                                                     >
                                                         {
@@ -144,6 +144,8 @@ const TableMain = ({ id, type, headers, body, page, setPage, itemActive, setItem
                                                                 )
                                                         }
                                                     </tr>
+                                                </tbody>
+                                                <tbody>
                                                     {
                                                         (itemActive !== item.id || !item.secondary_table) ? null :
                                                             <tr className={`${type}2 click ${itemActive === item.id ? 'active' : ''}`}

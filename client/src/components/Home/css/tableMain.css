@@ -1,19 +1,39 @@
 table.main>thead {
     position: sticky;
     top: var(--sticky1);
-    z-index: 8;
+    z-index: 10;
 }
 
-tr.main.active td {
+tr.main_wrapper.active table.main_body {
+    position: sticky;
+    z-index: 7;
+    top: 14rem;
+}
+
+tr.main.click.active tr.trade_summary_wrapper:first-of-type>td,
+tr.main.click.active {
     position: sticky;
     top: var(--sticky2);
-    z-index: 7;
+    z-index: 5;
 }
 
+
+table.secondary,
+div.secondary.nav,
 table.secondary>thead {
     position: sticky;
     top: var(--sticky3);
-    z-index: 6;
+    z-index: 4;
+}
+
+table.secondary>tbody>tr {
+    position: sticky;
+    top: var(--sticky3);
+    z-index: 1;
+}
+
+table.secondary {
+    z-index: 5;
 }
 
 ol.page_numbers {
@@ -116,22 +136,25 @@ td {
     height: 7rem;
 }
 
-table.secondary td {
+table.secondary td,
+table.secondary th {
     background-color: black;
+    position: relative;
+    z-index: 3;
 }
 
 tr.secondary.active {
 
-    z-index: 5;
+    z-index: 2;
     position: sticky;
-    top: 21rem;
+    top: 7rem;
 }
 
 
 table.secondary.subs,
 table.secondary.lineup {
     position: sticky;
-    top: 14rem;
+    top: 7rem;
 }
 
 table.tertiary.subs {
@@ -206,7 +229,15 @@ table.trade_summary {
     box-shadow: 0 0 5rem var(--color2);
 }
 
-table#trades tbody.active table.main_body>tbody>tr.main.active td {
+table#trades tr.trade_summary.click:first-of-type>td {
+    position: sticky;
+    top: 7rem;
+    height: 7rem;
+    box-sizing: border-box;
+    z-index: 7;
+}
+
+table#trades tr.trade_summary.click>td {
     position: sticky;
     top: 14rem;
     height: 7rem;
@@ -215,15 +246,7 @@ table#trades tbody.active table.main_body>tbody>tr.main.active td {
     filter: drop-shadow(0 0 1.5rem var(--color2))
 }
 
-table#trades tbody.active table.main_body>tbody>tr.main.active:first-of-type td {
-    position: sticky;
-    top: 7rem;
-    height: 7rem;
-    box-sizing: border-box;
-    z-index: 7;
-}
-
-table#trades tr.main2.active td {
+table#trades tr.main2.active>td {
     position: sticky;
     top: 14rem;
     z-index: 5;
