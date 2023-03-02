@@ -21,8 +21,7 @@ exports.create = async (req, res, app) => {
         console.log('GETTING LEAGUES FROM CACHE...')
         res.send(leagues_cache)
     } else {
-        let already_syncing = app.get('syncing') || 0
-        app.set('syncing', already_syncing += 1)
+
         let state = await axios.get('https://api.sleeper.app/v1/state/nfl')
         state = state.data
         const leagues = await axios.get(`http://api.sleeper.app/v1/user/${req.body.user_id}/leagues/nfl/${req.body.season}`)
@@ -73,30 +72,7 @@ exports.create = async (req, res, app) => {
 
         LeagueCache.set(`${req.body.user_id}_${req.body.season}`, leagues_all, 60 * 60)
 
-        if (state.league_season === req.body.season) {
-            let leaguemates = app.get('leaguemates')
 
-            leagues_all
-                .map(league => {
-                    return league.rosters
-                        .map(roster => {
-
-                            if (roster.user_id?.length > 1 && !leaguemates.find(lm => lm.user_id === roster.user_id)) {
-                                leaguemates.push({
-                                    user_id: roster.user_id,
-                                    username: roster.username,
-                                    avatar: roster.avatar,
-                                    time: new Date()
-                                })
-                            }
-                        })
-                })
-
-            app.set('leaguemates', leaguemates)
-        }
-
-        let still_syncing = app.get('syncing')
-        app.set('syncing', still_syncing -= 1)
 
         res.send(leagues_all)
     }

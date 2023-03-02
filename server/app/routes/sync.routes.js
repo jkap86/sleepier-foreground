@@ -5,7 +5,5 @@ module.exports = app => {
 
     syncs.boot(app)
 
-    syncs.leaguemates(app)
-
     syncs.playoffs(app)
 }

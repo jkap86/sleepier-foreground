@@ -22,7 +22,8 @@ exports.create = async (req, res) => {
             },
             defaults: {
                 username: user.data.display_name,
-                avatar: user.data.avatar
+                avatar: user.data.avatar,
+                updatedAt: new Date()
             }
         })
 
@@ -31,4 +32,20 @@ exports.create = async (req, res) => {
         res.send({ error: 'User not found' })
     }
 
+}
+
+exports.leaguemates = async (req, res) => {
+    const cutoff = new Date(new Date() - 24 * 60 * 60 * 1000)
+
+
+
+    await User.bulkCreate(req.body.leaguemates, {
+        updateOnDuplicate: ['username', 'avatar', 'updatedAt']
+    })
+
+    const used = process.memoryUsage()
+    for (let key in used) {
+        console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
+    }
+    res.send(cutoff)
 }

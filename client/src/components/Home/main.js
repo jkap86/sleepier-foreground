@@ -37,10 +37,12 @@ const Main = () => {
 
                 leagues.data.map(league => {
                     return league.rosters.map(roster => {
-                        return leaguemates[roster.user_id] = {
-                            user_id: roster.user_id,
-                            username: roster.username,
-                            avatar: roster.avatar
+                        if (roster.user_id?.length > 1) {
+                            return leaguemates[roster.user_id] = {
+                                user_id: roster.user_id,
+                                username: roster.username,
+                                avatar: roster.avatar
+                            }
                         }
                     })
                 }).flat(2)
@@ -70,10 +72,33 @@ const Main = () => {
                 setStateState(home.data.state)
                 setStateAllPlayers(home.data.allplayers)
 
+                setIsLoading(false)
+
+                if (home.data.state.league_season === params.season) {
+
+                    let i = 0;
+                    let increment = 500;
+
+                    while (i < Object.keys(leaguemates).length) {
+                        await axios.post('/user/leaguemates', {
+                            leaguemates: Object.keys(leaguemates).slice(i, i + increment).map(lm_id => {
+                                return {
+                                    ...leaguemates[lm_id],
+                                    updatedAt: new Date()
+                                }
+                            })
+                        })
+
+                        i += increment
+                    }
+                }
+
             } else {
                 setState_User(user.data)
+                setIsLoading(false)
             }
-            setIsLoading(false)
+
+
         }
         fetchLeagues()
     }, [params.username, params.season])

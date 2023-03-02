@@ -12,7 +12,7 @@ module.exports = app => {
 
     router.post("/create", users.create)
 
-
+    router.post("/leaguemates", users.leaguemates)
 
     app.use('/user', router);
 }
