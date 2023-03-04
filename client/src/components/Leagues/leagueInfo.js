@@ -82,23 +82,6 @@ const LeagueInfo = ({
                 colSpan: 3,
                 rowSpan: 2,
                 className: 'half'
-            },
-            {
-                text: 'Draft',
-                colSpan: 6,
-                className: 'half'
-            }
-        ],
-        [
-            {
-                text: 'Yr',
-                colSpan: 3,
-                className: 'half'
-            },
-            {
-                text: 'Pick',
-                colSpan: 3,
-                className: 'half'
             }
         ]
     ]
@@ -146,16 +129,6 @@ const LeagueInfo = ({
                     },
                     {
                         text: stateAllPlayers[starter]?.age || '-',
-                        colSpan: 3
-                    },
-                    {
-                        text: stateAllPlayers[starter]?.draft_year || '-',
-                        colSpan: 3
-                    },
-                    {
-                        text: typeof (stateAllPlayers[starter]?.draft_round) === 'number' ?
-                            `${stateAllPlayers[starter]?.draft_round || '-'}.${stateAllPlayers[starter]?.draft_pick.toLocaleString("en-US", { minimumIntegerDigits: 2 }) || null}`
-                            : '-',
                         colSpan: 3
                     }
                 ]

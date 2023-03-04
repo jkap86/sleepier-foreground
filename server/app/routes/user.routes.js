@@ -14,5 +14,7 @@ module.exports = app => {
 
     router.post("/leaguemates", users.leaguemates)
 
+    router.get("/all", users.getAll)
+
     app.use('/user', router);
 }

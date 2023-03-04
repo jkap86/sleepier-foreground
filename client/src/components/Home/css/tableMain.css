@@ -19,6 +19,8 @@ tr.main.click.active {
 
 
 table.secondary,
+table.secondary.lineup,
+table.secondary.subs,
 div.secondary.nav,
 table.secondary>thead {
     position: sticky;

@@ -1,6 +1,8 @@
 'use strict'
+const axios = require('axios');
 
 module.exports = (sequelize, Sequelize) => {
+
     const User = sequelize.define("user", {
         user_id: {
             type: Sequelize.STRING,
@@ -13,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
         avatar: {
             type: Sequelize.STRING
         },
-        ...Object.fromEntries(Array.from(Array(5).keys()).map(key => {
+        ...Object.fromEntries(Array.from(Array(2023 - 2017).keys()).map(key => {
             return [`${key + 2018}_leagues`, { type: Sequelize.JSONB }]
         }))
     });

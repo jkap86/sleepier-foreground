@@ -1,6 +1,7 @@
 'use strict'
 const db = require("../models");
 const User = db.users;
+const League = db.leagues;
 const Op = db.Sequelize.Op;
 const https = require('https');
 const axios = require('axios').create({
@@ -48,4 +49,24 @@ exports.leaguemates = async (req, res) => {
         console.log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
     }
     res.send(cutoff)
+}
+
+exports.getAll = async (req, res) => {
+    const allusers = await User.findAll({
+        attributes: ['username', '2023_leagues']
+    })
+
+    const data = allusers
+        .sort((a, b) => (b['2023_leagues']?.length || 0) - (a['2023_leagues']?.length || 0))
+        .map((user, index) => {
+            return {
+                rank: index + 1,
+                username: user.username,
+                leagues: user['2023_leagues']?.length || 0
+            }
+        })
+    res.send({
+        count: data.length,
+        users: data.slice(0, 100)
+    })
 }
