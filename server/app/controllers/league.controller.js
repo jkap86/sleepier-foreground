@@ -79,6 +79,7 @@ exports.create = async (req, res, app) => {
 }
 
 exports.draft = async (req, res, app) => {
+    const league = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}`)
     const league_drafts = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}/drafts`)
     const active_draft = league_drafts.data?.find(d => d.settings.slots_k > 0)
 
@@ -98,7 +99,10 @@ exports.draft = async (req, res, app) => {
             }
         })
 
-        res.send(picktracker)
+        res.send({
+            league: league.data,
+            picks: picktracker
+        })
 
     } else {
         res.send([])

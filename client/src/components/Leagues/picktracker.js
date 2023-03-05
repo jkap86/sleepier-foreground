@@ -17,6 +17,7 @@ const PickTracker = ({ }) => {
 
             })
             setKickers(kickers.data)
+
         }
 
         fetchKickers()
@@ -40,7 +41,7 @@ const PickTracker = ({ }) => {
         ]
     ]
 
-    const body = kickers
+    const body = (kickers.picks || [])
         ?.map(kicker => {
             return {
                 id: kicker.player_id,
@@ -78,11 +79,11 @@ const PickTracker = ({ }) => {
         <Link to={'/'} className='home' target={'_blank'}>
             Home
         </Link>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+        <h1>
+            <p className="image">
+                <strong>{kickers.league?.name}</strong>
+            </p>
+        </h1>
         <TableMain
             type={'main'}
             headers={headers}
