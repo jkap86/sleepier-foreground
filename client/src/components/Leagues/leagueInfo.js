@@ -63,23 +63,23 @@ const LeagueInfo = ({
             }
         })
 
-    const leagueInfo_headers = [
+    const leagueInfo_headers = !active_roster ? [] : [
         [
             {
                 text: 'Slot',
-                colSpan: 3,
+                colSpan: 5,
                 rowSpan: 2,
                 className: 'half'
             },
             {
                 text: 'Player',
-                colSpan: 10,
+                colSpan: 12,
                 rowSpan: 2,
                 className: 'half'
             },
             {
                 text: 'Age',
-                colSpan: 3,
+                colSpan: 5,
                 rowSpan: 2,
                 className: 'half'
             }
@@ -115,11 +115,11 @@ const LeagueInfo = ({
                     {
                         text: secondaryContent === 'Lineup' ? (position_abbrev[league.roster_positions[index]] || '-')
                             : stateAllPlayers[starter]?.position,
-                        colSpan: 3
+                        colSpan: 5
                     },
                     {
                         text: stateAllPlayers[starter]?.full_name || 'Empty',
-                        colSpan: 10,
+                        colSpan: 12,
                         className: 'left',
                         image: {
                             src: starter,
@@ -129,7 +129,7 @@ const LeagueInfo = ({
                     },
                     {
                         text: stateAllPlayers[starter]?.age || '-',
-                        colSpan: 3
+                        colSpan: 5
                     }
                 ]
             }
