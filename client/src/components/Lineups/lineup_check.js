@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { getLineupCheck } from '../Functions/loadData';
 import Lineup from "./lineup";
 
-const Lineup_Check = ({ stateState, stateAllPlayers, state_user, stateMatchups, setTab, week, setWeek, syncLeague }) => {
+const Lineup_Check = ({ stateState, stateAllPlayers, state_user, stateMatchups, setTab, week, setWeek, syncLeague, uploadedRankings }) => {
     const [itemActive, setItemActive] = useState('');
     const [page, setPage] = useState(1)
     const [searched, setSearched] = useState('')
@@ -51,9 +51,9 @@ const Lineup_Check = ({ stateState, stateAllPlayers, state_user, stateMatchups, 
     ]
 
     const lineups_body = stateMatchups.map(matchup_league => {
-        const matchup = matchup_league[`matchups_${stateState.week}`]?.find(x => x.roster_id === matchup_league.league.userRoster.roster_id)
+        const matchup = matchup_league[`matchups_${stateState.display_week}`]?.find(x => x.roster_id === matchup_league.league.userRoster.roster_id)
 
-        const opponentMatchup = matchup?.matchup_id ? matchup_league[`matchups_${stateState.week}`]?.find(x => x.matchup_id === matchup.matchup_id && x.roster_id !== matchup?.roster_id) : null
+        const opponentMatchup = matchup?.matchup_id ? matchup_league[`matchups_${stateState.display_week}`]?.find(x => x.matchup_id === matchup.matchup_id && x.roster_id !== matchup?.roster_id) : null
         let opponent;
         if (opponentMatchup) {
             const opponentRoster = matchup_league.league.rosters.find(r => r?.roster_id === opponentMatchup?.roster_id)
@@ -64,7 +64,7 @@ const Lineup_Check = ({ stateState, stateAllPlayers, state_user, stateMatchups, 
                 matchup: opponentMatchup
             }
         }
-        let lineups = matchup ? getLineupCheck(matchup, matchup_league.league, stateAllPlayers) : null
+        let lineups = matchup ? getLineupCheck(matchup, matchup_league.league, stateAllPlayers, uploadedRankings.uploadedRankings) : null
         const optimal_lineup = lineups?.optimal_lineup
         const lineup_check = lineups?.lineup_check
         const starting_slots = lineups?.starting_slots
@@ -140,6 +140,8 @@ const Lineup_Check = ({ stateState, stateAllPlayers, state_user, stateMatchups, 
                     syncLeague={syncLeague}
                     searched={searched}
                     setSearched={setSearched}
+                    uploadedRankings={uploadedRankings}
+                    stateState={stateState}
                 />
             )
         }

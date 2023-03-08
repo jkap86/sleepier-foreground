@@ -24,7 +24,7 @@ export const importRankings = (e, stateAllPlayers, setUploadedRankings) => {
                 const player_to_update = matchRankings(player[p].trim().toLowerCase().replace(/[^a-z]/g, ""), player[pos], stateAllPlayers)
                 const rank = player[r]
                 if (player_to_update.error) {
-                    notMatched.push(player[p])
+                    notMatched.push(player)
                 } else {
                     return uploadedRankings.push({
                         player: player_to_update,
@@ -32,6 +32,13 @@ export const importRankings = (e, stateAllPlayers, setUploadedRankings) => {
                     })
                 }
             })
+
+            if (uploadedRankings.error) {
+                console.log(uploadedRankings.error)
+            }
+
+
+
             setUploadedRankings({
                 uploadedRankings: uploadedRankings,
                 notMatched: notMatched
@@ -45,16 +52,17 @@ export const importRankings = (e, stateAllPlayers, setUploadedRankings) => {
 }
 
 const matchRankings = (player, position, stateAllPlayers) => {
+
     let start = 0
     let end = 3
     const players_to_search = Object.keys(stateAllPlayers).filter(p => stateAllPlayers[p]?.position === position)
     let matches = players_to_search
-        .filter(player_id => player.includes(stateAllPlayers[player_id]?.searchName.slice(start, end)) || stateAllPlayers[player_id]?.searchName.includes(player.slice(start, end)));
+        .filter(player_id => player.includes(stateAllPlayers[player_id]?.search_full_name.slice(start, end)) || stateAllPlayers[player_id]?.search_full_name.includes(player.slice(start, end)));
 
-    while (matches.length > 1) {
+    while (matches.length > 1 && end <= 50) {
         end += 1
         matches = players_to_search
-            .filter(player_id => player.includes(stateAllPlayers[player_id]?.searchName.slice(start, end)) || stateAllPlayers[player_id]?.searchName.includes(player.slice(start, end)));
+            .filter(player_id => player.includes(stateAllPlayers[player_id]?.search_full_name.slice(start, end)) || stateAllPlayers[player_id]?.search_full_name.includes(player.slice(start, end)));
     }
 
     if (matches.length === 1) {
@@ -67,9 +75,7 @@ const matchRankings = (player, position, stateAllPlayers) => {
             error: {
                 player: player,
                 position: position,
-                matches: matches,
-                start: start,
-                end: end
+                matches: matches
 
             }
         }

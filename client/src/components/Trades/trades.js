@@ -30,7 +30,7 @@ const Trades = ({
     const [filter, setFilter] = useState('All Trades')
     const [pricecheckTrades, setPricecheckTrades] = useState({})
     const [pricecheckPlayer, setPricecheckPlayer] = useState('')
-
+    const [pricecheckPlayer2, setPricecheckPlayer2] = useState('')
 
     useEffect(() => {
         if (!searched_month) {
@@ -153,7 +153,7 @@ const Trades = ({
         ]
     ]
 
-    const tradesDisplay = filter === 'Price Check' ? pricecheckTrades[pricecheckPlayer.id] || [] : stateTradesFiltered
+    const tradesDisplay = filter === 'Price Check' ? pricecheckTrades[pricecheckPlayer.id]?.filter(trade => Object.keys(trade.adds || {}).includes(pricecheckPlayer2.id) || pricecheckPlayer2 === '') || [] : stateTradesFiltered
 
     const trades_body = tradesDisplay
         .sort((a, b) => parseInt(b.status_updated) - parseInt(a.status_updated))
@@ -299,6 +299,24 @@ const Trades = ({
         }
     })
 
+    const players_list2 = Array.from(
+        new Set(
+            pricecheckTrades[pricecheckPlayer.id]?.map(trade => Object.keys(trade.adds || {})).flat()
+        )
+    )
+        .filter(player_id => player_id !== pricecheckPlayer.id)
+        .map(player_id => {
+            return {
+                id: player_id,
+                text: stateAllPlayers[player_id]?.full_name,
+                image: {
+                    src: player_id,
+                    alt: 'player headshot',
+                    type: 'player'
+                }
+            }
+        })
+
 
     let managers_dict = {}
 
@@ -399,6 +417,15 @@ const Trades = ({
                     placeholder={`Player`}
                     list={players_list}
                 />
+                {
+                    filter !== 'Price Check' || pricecheckPlayer === '' ? null :
+                        <Search
+                            id={'By Player2'}
+                            sendSearched={(data) => setPricecheckPlayer2(data)}
+                            placeholder={'Player 2'}
+                            list={players_list2}
+                        />
+                }
 
             </div>
             {

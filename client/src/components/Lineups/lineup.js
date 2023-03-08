@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import tumbleweedgif from '../../images/tumbleweed.gif';
 
 
-const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, stateAllPlayers, state_user, lineup_check, syncLeague, players_points }) => {
+const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, stateAllPlayers, state_user, lineup_check, syncLeague, players_points, uploadedRankings, stateState }) => {
     const [itemActive, setItemActive] = useState(null);
     const [syncing, setSyncing] = useState(false)
     const [secondaryContent, setSecondaryContent] = useState('Optimal')
 
     const active_player = lineup_check?.find(x => `${x.slot}_${x.index}` === itemActive)?.current_player
+
+    console.log({ matchup: matchup })
 
     useEffect(() => {
         if (itemActive) {
@@ -18,7 +20,7 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
 
     const handleSync = (league_id, user_id) => {
         setSyncing(true)
-        syncLeague(league_id, user_id)
+        syncLeague(league_id, stateState.display_week)
         setTimeout(() => {
             setSyncing(false)
         }, 1000)
@@ -93,18 +95,12 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
                     }
                 },
                 {
-                    text: stateAllPlayers[slot.current_player]?.player_opponent
-                        .replace('at', '@')
-                        .replace('vs.', '')
-                        .replace(/\s/g, '')
-                        .trim()
-                        ||
-                        '-',
+                    text: '-',
                     colSpan: 3,
                     className: color
                 },
                 {
-                    text: stateAllPlayers[slot.current_player]?.rank_ecr || '-',
+                    text: uploadedRankings.uploadedRankings?.find(r => r.player.id === slot.current_player)?.rank || 999,
                     colSpan: 3,
                     className: color
                 },
@@ -122,7 +118,7 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
             {
                 text: (
                     secondaryContent === 'Options' ?
-                        lineup_check.find(x => `${x.slot}_${x.index}` === itemActive)?.slot_options
+                        lineup_check?.find(x => `${x.slot}_${x.index}` === itemActive)?.slot_options
                         : secondaryContent === 'Optimal' ?
                             optimal_lineup?.map(x => x.player) || []
                             : opponent?.matchup?.starters
@@ -187,7 +183,7 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
             },
 
             ...lineup_check.find(x => x.slot_index === itemActive)?.slot_options
-                ?.sort((a, b) => stateAllPlayers[a]?.rank_ecr - stateAllPlayers[b]?.rank_ecr)
+                ?.sort((a, b) => (uploadedRankings.uploadedRankings?.find(r => r.player.id === a)?.rank || 999) - (uploadedRankings.uploadedRankings?.find(r => r.player.id === b)?.rank || 999))
                 ?.map((so, index) => {
                     const color = optimal_lineup.find(x => x.player === so) ? 'green' :
                         stateAllPlayers[so]?.rank_ecr < stateAllPlayers[active_player]?.rank_ecr ? 'yellow' : ''
@@ -210,17 +206,12 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
                                 }
                             },
                             {
-                                text: stateAllPlayers[so]?.player_opponent
-                                    .replace('at', '@')
-                                    .replace('vs.', '')
-                                    .replace(/\s/g, '')
-                                    .trim()
-                                    || '-',
+                                text: '-',
                                 colSpan: 3,
                                 className: color
                             },
                             {
-                                text: stateAllPlayers[so]?.rank_ecr,
+                                text: uploadedRankings.uploadedRankings?.find(r => r.player.id === so)?.rank || 999,
                                 colSpan: 3,
                                 className: color
                             },
@@ -253,17 +244,11 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
                             }
                         },
                         {
-                            text: stateAllPlayers[opp_starter]?.player_opponent
-                                .replace('at', '@')
-                                .replace('vs.', '')
-                                .replace(/\s/g, '')
-                                .trim()
-                                ||
-                                '-',
+                            text: '-',
                             colSpan: 3,
                         },
                         {
-                            text: stateAllPlayers[opp_starter]?.rank_ecr || '-',
+                            text: uploadedRankings.uploadedRankings?.find(r => r.player.id === opp_starter)?.rank || 999,
                             colSpan: 3
                         },
                         {
@@ -293,16 +278,12 @@ const Lineup = ({ matchup, opponent, starting_slots, league, optimal_lineup, sta
                             }
                         },
                         {
-                            text: stateAllPlayers[ol.player]?.player_opponent
-                                .replace('at', '@')
-                                .replace('vs.', '')
-                                .replace(/\s/g, '')
-                                .trim(),
+                            text: '-',
                             colSpan: 3,
                             className: 'green'
                         },
                         {
-                            text: stateAllPlayers[ol.player]?.rank_ecr,
+                            text: uploadedRankings.uploadedRankings?.find(r => r.player.id === ol.player)?.rank || 999,
                             colSpan: 3,
                             className: 'green'
                         },

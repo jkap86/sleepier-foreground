@@ -47,6 +47,14 @@ img.thumbnail {
   cursor: pointer;
 }
 
+.green {
+  color: greenyellow;
+}
+
+.red {
+  color: red;
+}
+
 ol li {
   list-style: none;
 }
@@ -101,6 +109,7 @@ table {
   height: 3rem;
 }
 
+.left:hover,
 .left:hover p,
 .left li:hover,
 .left li.end:hover {
@@ -108,10 +117,17 @@ table {
   width: fit-content;
   min-width: 90%;
   position: relative;
-  z-index: 2;
+  z-index: 9;
   background-color: black;
-  outline: .5rem solid black;
 }
+
+.left:hover p {
+  outline: 1rem solid black;
+  filter: drop-shadow(0 0 1rem white);
+  position: relative;
+  z-index: 12;
+}
+
 
 
 .left li:hover>span.end {
@@ -215,4 +231,14 @@ div.loading {
     font-size: 20rem;
     opacity: 1;
   }
+}
+
+label.upload {
+  font-size: 2rem;
+  display: block;
+  margin: 5rem;
+}
+
+input[type='file'] {
+  display: none;
 }

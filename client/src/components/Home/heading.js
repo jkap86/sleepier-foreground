@@ -54,7 +54,7 @@ const Heading = ({
                     onChange={(e) => setTab(e.target.value)}
                 >
                     <option>Trades</option>
-                    <option>Lineups</option>
+                    {/*<option>Lineups</option>*/}
                     <option>Players</option>
                     <option>Leagues</option>
                     <option>Leaguemates</option>

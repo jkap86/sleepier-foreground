@@ -18,6 +18,8 @@ const Main = () => {
     const [stateTrades, setStateTrades] = useState([]);
     const [stateLeaguemateIds, setStateLeaguemateIds] = useState([])
 
+
+
     useEffect(() => {
         const fetchLeagues = async () => {
             setIsLoading(true)
@@ -97,11 +99,22 @@ const Main = () => {
                 setState_User(user.data)
                 setIsLoading(false)
             }
-
-
         }
         fetchLeagues()
     }, [params.username, params.season])
+
+    const syncLeague = async (league_id, week) => {
+        let matchups = stateMatchups
+        const matchups_new = await axios.post(`/league/sync`, {
+            league_id: league_id,
+            week: week
+        })
+        const index = matchups.findIndex(matchup => {
+            return matchup.league.league_id === league_id
+        })
+        matchups[index][`matchups_${week}`] = matchups_new.data
+        setStateMatchups([...matchups])
+    }
 
     return <>
         {
@@ -123,6 +136,7 @@ const Main = () => {
                         stateMatchups={stateMatchups}
                         stateTrades={stateTrades}
                         stateLeaguemateIds={stateLeaguemateIds}
+                        syncLeague={syncLeague}
                     />
                 </React.Suspense>
 

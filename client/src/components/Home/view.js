@@ -19,10 +19,11 @@ const View = ({
     statePlayerShares,
     stateMatchups,
     stateTrades,
-    stateLeaguemateIds
+    stateLeaguemateIds,
+    syncLeague
 }) => {
     const params = useParams();
-    const [tab, setTab] = useState('Trades');
+    const [tab, setTab] = useState('Players');
     const [type1, setType1] = useState('All');
     const [type2, setType2] = useState('All');
     const [lineupsTab, setLineupsTab] = useState('Weekly Rankings');
@@ -31,7 +32,7 @@ const View = ({
     const [statePlayerSharesFiltered, setStatePlayerSharesFiltered] = useState([]);
     const [stateLeaguematesFiltered, setStateLeaguematesFiltered] = useState([]);
     const [stateMatchupsFiltered, setStateMatchupsFiltered] = useState([]);
-
+    const [uploadedRankings, setUploadedRankings] = useState({})
 
     useEffect(() => {
         const filtered_data = filterLeagues(stateLeagues, type1, type2, stateLeaguemates, statePlayerShares, stateMatchups)
@@ -59,11 +60,13 @@ const View = ({
                 stateAllPlayers={stateAllPlayers}
                 state_user={state_user}
                 stateMatchups={stateMatchupsFiltered}
-                syncLeague={console.log}
+                syncLeague={syncLeague}
                 tab={lineupsTab}
                 setTab={setLineupsTab}
                 week={week}
                 setWeek={setWeek}
+                uploadedRankings={uploadedRankings}
+                setUploadedRankings={setUploadedRankings}
             />
             break;
         case 'Leagues':

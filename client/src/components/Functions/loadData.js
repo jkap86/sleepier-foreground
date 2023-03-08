@@ -64,7 +64,7 @@ export const getLeagueData = (leagues, user_id, state, query_season) => {
 
         const week = query_season === state.league_season && state.season_type !== 'post' ? state.week
             : query_season < state.league_season ? 18
-                : 0
+                : 1
 
         let matchups_league = { league: league }
 
@@ -117,7 +117,8 @@ export const getLeagueData = (leagues, user_id, state, query_season) => {
     }
 }
 
-export const getLineupCheck = (matchup, league, stateAllPlayers) => {
+export const getLineupCheck = (matchup, league, stateAllPlayers, weeklyRankings) => {
+
     const position_map = {
         'QB': ['QB'],
         'RB': ['RB', 'FB'],
@@ -145,7 +146,7 @@ export const getLineupCheck = (matchup, league, stateAllPlayers) => {
     matchup?.players?.map(player_id => {
         players.push({
             id: player_id,
-            rank: stateAllPlayers[player_id]?.rank_ecr || 999
+            rank: weeklyRankings?.find(r => r.player.id === player_id)?.rank || 999
         })
     })
 

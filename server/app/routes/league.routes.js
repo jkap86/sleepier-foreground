@@ -13,5 +13,7 @@ module.exports = app => {
         leagues.draft(req, res, app)
     })
 
+    router.post('/sync', leagues.sync)
+
     app.use('/league', router);
 }

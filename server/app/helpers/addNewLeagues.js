@@ -115,8 +115,8 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
     let keys = ["name", "avatar", "best_ball", "type", "settings", "scoring_settings", "roster_positions",
         "users", "rosters", "drafts", "updatedAt"]
 
-    if (season === state.league_season && state.week > 0 && state.week < 19 && state.season_type === 'regular') {
-        keys.push(`matchups_${state.week}`)
+    if (season === state.league_season && state.display_week > 0 && state.display_week < 19) {
+        keys.push(`matchups_${state.display_week}`)
     }
 
     let updated_leagues = []
@@ -144,9 +144,9 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
 
                     let matchups;
 
-                    if (keys.includes(`matchups_${state.week}`)) {
+                    if (season === state.league_season && state.season_type !== 'post') {
                         try {
-                            matchups = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/matchups/${state.week}`)
+                            matchups = await axios.get(`https://api.sleeper.app/v1/league/${league_to_update}/matchups/${state.display_week}`)
                         } catch (error) {
                             console.log(error)
                             matchups = {
@@ -199,6 +199,7 @@ const updateLeagues = async (axios, state, League, leagues_to_update, season, sy
                                 draft_order: draft.draft_order
                             }
                         }) || [],
+                        [`matchups_${state.display_week}`]: matchups.data || [],
                         updatedAt: Date.now()
                     }
 

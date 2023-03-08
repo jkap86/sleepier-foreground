@@ -11,7 +11,9 @@ const Lineups = ({
     tab,
     setTab,
     week,
-    setWeek
+    setWeek,
+    uploadedRankings,
+    setUploadedRankings
 }) => {
 
 
@@ -25,6 +27,7 @@ const Lineups = ({
             week={week}
             setWeek={setWeek}
             syncLeague={syncLeague}
+            uploadedRankings={uploadedRankings}
         />
         :
         <WeeklyRankings
@@ -33,6 +36,8 @@ const Lineups = ({
             setTab={setTab}
             week={week}
             setWeek={setWeek}
+            uploadedRankings={uploadedRankings}
+            setUploadedRankings={setUploadedRankings}
         />
 
 

@@ -12,7 +12,7 @@ const LeagueInfo = ({
     const [itemActive, setItemActive] = useState('');
     const [secondaryContent, setSecondaryContent] = useState('Lineup')
 
-    console.log(league)
+
 
     const active_roster = league.rosters.find(x => x.roster_id === itemActive)
 

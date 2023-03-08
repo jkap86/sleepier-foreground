@@ -9,5 +9,7 @@ module.exports = app => {
 
     router.post("/pricecheck", trades.pricecheck)
 
+    router.post("/comparison", trades.comparison)
+
     app.use('/trade', router);
 }

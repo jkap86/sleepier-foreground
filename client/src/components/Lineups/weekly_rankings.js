@@ -2,17 +2,17 @@ import TableMain from '../Home/tableMain';
 import { useState } from "react";
 import { importRankings } from '../Functions/filterData';
 
-const WeeklyRankings = ({ stateState, stateAllPlayers, setTab }) => {
+const WeeklyRankings = ({ stateState, stateAllPlayers, setTab, uploadedRankings, setUploadedRankings }) => {
     const [itemActive, setItemActive] = useState('');
     const [page, setPage] = useState(1)
     const [searched, setSearched] = useState('')
-    const [uploadedRankings, setUploadedRankings] = useState(null)
 
-    /*
+
+
     console.log({
         uploadedRankings: uploadedRankings
     })
-    */
+
 
     const caption = (
         <div className="primary nav">
@@ -49,57 +49,54 @@ const WeeklyRankings = ({ stateState, stateAllPlayers, setTab }) => {
         ]
     ]
 
-    const weekly_rankings_body = Object.keys(stateAllPlayers)
-        .filter(player_id => stateAllPlayers[player_id]?.rank_ecr < 999)
-        .sort((a, b) => stateAllPlayers[a]?.rank_ecr - stateAllPlayers[b]?.rank_ecr)
-        .map(player_id => {
-            const kickoff = new Date(parseInt(stateAllPlayers[player_id]?.gametime) * 1000)
+    const weekly_rankings_body = (uploadedRankings?.uploadedRankings || [])
+        ?.map(player => {
+
             return {
-                id: player_id,
+                id: player.player.id,
                 search: {
-                    text: stateAllPlayers[player_id].full_name,
+                    text: stateAllPlayers[player.player.id].full_name,
                     image: {
-                        src: player_id,
+                        src: player.player.id,
                         alt: 'player photo',
                         type: 'player'
                     }
                 },
                 list: [
                     {
-                        text: stateAllPlayers[player_id]?.full_name,
+                        text: stateAllPlayers[player.player.id]?.full_name,
                         colSpan: 3,
                         className: 'left',
                         image: {
-                            src: player_id,
-                            alt: stateAllPlayers[player_id]?.full_name,
+                            src: player.player.id,
+                            alt: stateAllPlayers[player.player.id]?.full_name,
                             type: 'player'
                         }
                     },
                     {
-                        text: stateAllPlayers[player_id]?.player_opponent,
-                        colSpan: 1
-                    },
-                    {
-                        text: kickoff.toLocaleString("en-US", { weekday: 'short', hour: 'numeric' }),
-                        colSpan: 1
-                    },
-                    {
-                        text: stateAllPlayers[player_id]?.rank_ecr,
+                        text: player.rank,
                         colSpan: 1
                     }
                 ]
             }
         })
 
-    const options = [
-        <input
-            type={'file'}
-            onChange={(e) => importRankings(e, stateAllPlayers, setUploadedRankings)}
-        />
-    ]
 
     return <>
+        <h1>
+            {
+                Object.keys(stateAllPlayers)
+                    .filter(player_id => stateAllPlayers[player_id]?.rank_ecr < 999).length
+            }
+        </h1>
         {caption}
+        <label className='upload'>
+            Upload
+            <input
+                type={'file'}
+                onChange={(e) => importRankings(e, stateAllPlayers, setUploadedRankings)}
+            />
+        </label>
         <TableMain
             id={'Rankings'}
             type={'main'}
@@ -112,8 +109,9 @@ const WeeklyRankings = ({ stateState, stateAllPlayers, setTab }) => {
             search={true}
             searched={searched}
             setSearched={setSearched}
-        //  options={options}
+
         />
+
     </>
 }
 
