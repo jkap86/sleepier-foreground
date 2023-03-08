@@ -110,7 +110,7 @@ table {
 }
 
 
-
+.left:hover p,
 .left li:hover,
 .left li.end:hover {
   overflow: visible;
@@ -121,7 +121,7 @@ table {
   background-color: black;
 }
 
-.left:hover>p {
+.left:hover p {
   outline: 1rem solid black;
   filter: drop-shadow(0 0 1rem white);
   position: relative;
