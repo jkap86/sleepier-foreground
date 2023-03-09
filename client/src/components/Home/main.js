@@ -99,6 +99,30 @@ const Main = () => {
                 setState_User(user.data)
                 setIsLoading(false)
             }
+            /*
+                        const pc = await axios.get('/trade/rankings')
+            
+                        
+                                  
+                                               const rankings = Object.keys(pc.data.rankings)
+                                                   .filter(player_id => stateAllPlayers[player_id]?.position === 'QB')
+                                                   .sort((a, b) =>
+                                                       pc.data.rankings[b].filter(x => x === a).length - pc.data.rankings[a].filter(x => x === b).length
+                                                       || Array.from(new Set(pc.data.rankings[b])).reduce((acc, cur) => acc + pc.data.rankings[cur].length, 0) - Array.from(new Set(pc.data.rankings[a])).reduce((acc, cur) => acc + pc.data.rankings[cur].length, 0)
+                                                   )
+                                                   .map(player_id => {
+                                                       return {
+                                                           [stateAllPlayers[player_id]?.full_name]: pc.data.rankings[player_id]
+                                                               .filter(player_id2 => stateAllPlayers[player_id2]?.position === 'QB')
+                                                               .map(player_id2 => stateAllPlayers[player_id2]?.full_name)
+                                                               .sort((a, b) => a > b ? 1 : -1)
+                                                       }
+                                                   })
+                                                  
+            
+            
+                        console.log(pc.data)
+             */
         }
         fetchLeagues()
     }, [params.username, params.season])

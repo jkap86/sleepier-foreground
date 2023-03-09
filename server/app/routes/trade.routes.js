@@ -9,7 +9,9 @@ module.exports = app => {
 
     router.post("/pricecheck", trades.pricecheck)
 
-    router.post("/comparison", trades.comparison)
+    router.get("/rankings", async (req, res) => {
+        trades.rankings(req, res, app)
+    })
 
     app.use('/trade', router);
 }

@@ -43,7 +43,7 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
                     matchups[`matchups_${week}`] = matchups_prev_week?.data || []
                 }
 
-                if (league.data) {
+                if (league?.data) {
                     const new_league = {
                         league_id: league_to_add,
                         name: league.data.name,
@@ -80,14 +80,14 @@ const addNewLeagues = async (axios, state, League, leagues_to_add, season, sync 
                                     })
                                 }
                             }),
-                        drafts: drafts.data.map(draft => {
+                        drafts: drafts?.data?.map(draft => {
                             return {
                                 draft_id: draft.draft_id,
                                 status: draft.status,
                                 rounds: draft.settings.rounds,
                                 draft_order: draft.draft_order
                             }
-                        }),
+                        }) || [],
                         ...matchups
                     }
                     new_leagues_batch.push(new_league)

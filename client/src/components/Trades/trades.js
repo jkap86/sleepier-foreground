@@ -105,7 +105,10 @@ const Trades = ({
                 if (searched_player === '') {
                     trades_filtered1 = trades
                 } else {
-                    trades_filtered1 = trades.filter(t => Object.keys(t.adds || {}).includes(searched_player.id))
+                    trades_filtered1 = trades.filter(t => (
+                        Object.keys(t.adds || {}).includes(searched_player.id)
+                        || t.draft_picks.find(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` === searched_player.id)
+                    ))
                 }
 
 
@@ -118,18 +121,23 @@ const Trades = ({
                 if (searched_player2 === '') {
                     trades_filtered3 = trades_filtered2
                 } else {
-                    trades_filtered3 = trades_filtered2.filter(t =>
+                    trades_filtered3 = trades_filtered2.filter(t => (
                         (t.adds || {})[searched_player2.id] && (t.adds || {})[searched_player2.id] !== (t.adds || {})[searched_player.id]
-                    )
+                        || t.draft_picks.find(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` === searched_player.id)
+                    ))
                 }
 
                 if (searched_league === '') {
                     trades_filtered3 = trades_filtered2
                 } else {
-                    trades_filtered3 = trades_filtered2.filter(t =>
-                        t.tips.acquire.map(add => add.league.league_id).includes(searched_league.id)
-                        || t.tips.trade_away.map(drop => drop.league.league_id).includes(searched_league.id)
-                    )
+                    if (filter === 'All Trades') {
+                        trades_filtered3 = trades_filtered2.filter(t => t.league.league_id === searched_league.id)
+                    } else {
+                        trades_filtered3 = trades_filtered2.filter(t =>
+                            t.tips.acquire.map(add => add.league.league_id).includes(searched_league.id)
+                            || t.tips.trade_away.map(drop => drop.league.league_id).includes(searched_league.id)
+                        )
+                    }
                 }
 
                 setStateTradesFiltered([...trades_filtered3])
@@ -283,7 +291,7 @@ const Trades = ({
 
 
 
-    const players_list = Array.from(
+    const players_list = [...Array.from(
         new Set(
             stateTradesFiltered.map(trade => Object.keys(trade.adds || {})).flat()
         )
@@ -297,8 +305,28 @@ const Trades = ({
                 type: 'player'
             }
         }
+    }),
+    ...Array.from(
+        new Set(
+            stateTradesFiltered.map(trade => trade.draft_picks?.map(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) || []).flat(2)
+        )
+    ).map(pick => {
+        const pick_split = pick.split('_')
+        return {
+            id: pick,
+            text: pick_split[0] + (
+                parseInt(pick_split[2]) && pick_split[0] === params.season ?
+                    ` ${pick_split[1]}.${pick_split[2].toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                    : ` Round ${pick_split[1]}`
+            ),
+            image: {
+                src: null,
+                alt: 'pick headshot',
+                type: 'player'
+            }
+        }
     })
-
+    ]
     const players_list2 = Array.from(
         new Set(
             pricecheckTrades[pricecheckPlayer.id]?.map(trade => Object.keys(trade.adds || {})).flat()
@@ -347,28 +375,40 @@ const Trades = ({
 
     stateTradesFiltered
         .map(trade => {
-            trade.tips.acquire.map(add => {
-                leagues_list[add.league.league_id] = {
-                    id: add.league.league_id,
-                    text: add.league.name,
+            if (filter === 'All Trades') {
+                leagues_list[trade.league.league_id] = {
+                    id: trade.league.league_id,
+                    text: trade.league.name,
                     image: {
-                        src: add.league.avatar,
+                        src: trade.league.avatar,
                         alt: 'league avatar',
                         type: 'league'
                     }
                 }
-            })
-            trade.tips.trade_away.map(drop => {
-                leagues_list[drop.league.league_id] = {
-                    id: drop.league.league_id,
-                    text: drop.league.name,
-                    image: {
-                        src: drop.league.avatar,
-                        alt: 'league avatar',
-                        type: 'league'
+            } else {
+                trade.tips.acquire.map(add => {
+                    leagues_list[add.league.league_id] = {
+                        id: add.league.league_id,
+                        text: add.league.name,
+                        image: {
+                            src: add.league.avatar,
+                            alt: 'league avatar',
+                            type: 'league'
+                        }
                     }
-                }
-            })
+                })
+                trade.tips.trade_away.map(drop => {
+                    leagues_list[drop.league.league_id] = {
+                        id: drop.league.league_id,
+                        text: drop.league.name,
+                        image: {
+                            src: drop.league.avatar,
+                            alt: 'league avatar',
+                            type: 'league'
+                        }
+                    }
+                })
+            }
         })
 
     leagues_list = Object.values(leagues_list)
@@ -429,7 +469,7 @@ const Trades = ({
 
             </div>
             {
-                filter === 'Trades with Leads' ?
+                ['All Trades', 'Trades with Leads'].includes(filter) ?
                     <div>
 
                         <Search
