@@ -161,7 +161,13 @@ const Trades = ({
         ]
     ]
 
-    const tradesDisplay = filter === 'Price Check' ? pricecheckTrades[pricecheckPlayer.id]?.filter(trade => Object.keys(trade.adds || {}).includes(pricecheckPlayer2.id) || pricecheckPlayer2 === '') || [] : stateTradesFiltered
+    const tradesDisplay = filter === 'Price Check' ?
+        pricecheckTrades[pricecheckPlayer.id]
+            ?.filter(
+                trade => Object.keys(trade.adds || {}).includes(pricecheckPlayer2.id) || pricecheckPlayer2 === ''
+                    || trade.draft_picks?.find(pick => (`${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) === pricecheckPlayer2.id)
+            ) || []
+        : stateTradesFiltered
 
     const trades_body = tradesDisplay
         .sort((a, b) => parseInt(b.status_updated) - parseInt(a.status_updated))
@@ -327,7 +333,7 @@ const Trades = ({
         }
     })
     ]
-    const players_list2 = Array.from(
+    const players_list2 = [...Array.from(
         new Set(
             pricecheckTrades[pricecheckPlayer.id]?.map(trade => Object.keys(trade.adds || {})).flat()
         )
@@ -343,8 +349,30 @@ const Trades = ({
                     type: 'player'
                 }
             }
+        }),
+    ...Array.from(
+        new Set(
+            pricecheckTrades[pricecheckPlayer.id]?.map(trade => trade.draft_picks?.map(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) || []).flat(2)
+        )
+    )
+        .map(pick => {
+            const pick_split = pick.split('_')
+            return {
+                id: pick,
+                text: pick_split[0] + (
+                    parseInt(pick_split[2]) && pick_split[0] === params.season ?
+                        ` ${pick_split[1]}.${pick_split[2].toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                        : ` Round ${pick_split[1]}`
+                ),
+                image: {
+                    src: null,
+                    alt: 'pick headshot',
+                    type: 'player'
+                }
+            }
         })
-
+        .filter(x => x.text !== pricecheckPlayer.text)
+    ]
 
     let managers_dict = {}
 
