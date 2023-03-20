@@ -4,7 +4,9 @@ import TradeRosters from "./tradeRosters";
 
 const TradeInfo = ({
     trade,
-    stateAllPlayers
+    stateAllPlayers,
+    stateState,
+    state_user
 }) => {
     const [tab, setTab] = useState('Leads');
 
@@ -16,6 +18,8 @@ const TradeInfo = ({
                 <TradeTargets
                     trade={trade}
                     stateAllPlayers={stateAllPlayers}
+                    stateState={stateState}
+                    state_user={state_user}
                 />
             )
             break;

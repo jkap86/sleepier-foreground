@@ -55,7 +55,7 @@ const Main = () => {
                 })
 
 
-                const trade_finds = getTradeTips(trades.data, leagues.data, leaguemates)
+                const trade_finds = getTradeTips(trades.data, leagues.data, leaguemates, params.season)
 
 
 

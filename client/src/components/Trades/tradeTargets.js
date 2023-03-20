@@ -3,7 +3,9 @@ import TableMain from "../Home/tableMain";
 
 const TradeTargets = ({
     trade,
-    stateAllPlayers
+    stateAllPlayers,
+    stateState,
+    state_user
 }) => {
 
 
@@ -34,7 +36,10 @@ const TradeTargets = ({
     const trade_acquisitions_body = !trade.tips?.acquire?.length > 0 ? [{ id: 'NONE', list: [{ text: '-', colSpan: 9 }] }] : trade.tips?.acquire?.map(add => {
 
         return {
-            id: `${add.manager.user_id}_${add.player_id}_${add.league.league_id}`,
+            id: `${add.manager.user_id}_${add.type === 'player' ? stateAllPlayers[add.player_id]?.full_name
+                : `${add.player_id.season} ` + (add.player_id.season === stateState.league_season && add.player_id.order ? `${add.player_id.round}.${add.player_id.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                    : add.manager.user_id !== state_user.user_id ? `Round ${add.player_id.round} (${add.manager.username})`
+                        : `Round ${add.player_id.round}`)}_${add.league.league_id}`,
             list: [
                 {
                     text: add.manager.username,
@@ -47,7 +52,10 @@ const TradeTargets = ({
                     }
                 },
                 {
-                    text: stateAllPlayers[add.player_id]?.full_name,
+                    text: add.type === 'player' ? stateAllPlayers[add.player_id]?.full_name
+                        : `${add.player_id.season} ` + (add.player_id.season === stateState.league_season && add.player_id.order ? `${add.player_id.round}.${add.player_id.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                            : add.manager.user_id !== state_user.user_id ? `Round ${add.player_id.round} (${add.manager.username})`
+                                : `Round ${add.player_id.round}`),
                     colSpan: 3,
                     className: 'left',
                     image: {
@@ -98,7 +106,10 @@ const TradeTargets = ({
     const trade_flips_body = !trade.tips?.trade_away?.length > 0 ? [{ id: 'NONE', list: [{ text: '-', colSpan: 9 }] }] : trade.tips?.trade_away?.map(add => {
 
         return {
-            id: `${add.manager.user_id}_${add.player_id}_${add.league.league_id}`,
+            id: `${add.manager.user_id}_${add.type === 'player' ? stateAllPlayers[add.player_id]?.full_name
+                : `${add.player_id.season} ` + (add.player_id.season === stateState.league_season && add.player_id.order ? `${add.player_id.round}.${add.player_id.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                    : add.manager.user_id !== state_user.user_id ? `Round ${add.player_id.round} (${add.manager.username})`
+                        : `Round ${add.player_id.round}`)}_${add.league.league_id}`,
             list: [
                 {
                     text: add.manager.username,
@@ -111,7 +122,10 @@ const TradeTargets = ({
                     }
                 },
                 {
-                    text: stateAllPlayers[add.player_id]?.full_name,
+                    text: add.type === 'player' ? stateAllPlayers[add.player_id]?.full_name
+                        : `${add.player_id.season} ` + (add.player_id.season === stateState.league_season && add.player_id.order ? `${add.player_id.round}.${add.player_id.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                            : add.manager.user_id !== state_user.user_id ? `Round ${add.player_id.round} (${add.manager.username})`
+                                : `Round ${add.player_id.round}`),
                     colSpan: 3,
                     className: 'left',
                     image: {

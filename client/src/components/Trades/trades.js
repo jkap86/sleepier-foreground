@@ -32,6 +32,10 @@ const Trades = ({
     const [pricecheckPlayer, setPricecheckPlayer] = useState('')
     const [pricecheckPlayer2, setPricecheckPlayer2] = useState('')
 
+    console.log({
+        trades: stateTradesFiltered.filter(x => x.tips.acquire.find(y => y.type === 'pick'))
+    })
+
     useEffect(() => {
         if (!searched_month) {
             let now = new Date()
@@ -105,10 +109,28 @@ const Trades = ({
                 if (searched_player === '') {
                     trades_filtered1 = trades
                 } else {
-                    trades_filtered1 = trades.filter(t => (
-                        Object.keys(t.adds || {}).includes(searched_player.id)
-                        || t.draft_picks.find(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` === searched_player.id)
-                    ))
+                    if (filter === 'All Trades') {
+                        trades_filtered1 = trades.filter(t => (
+                            Object.keys(t.adds || {}).includes(searched_player.id)
+                            || t.draft_picks.find(pick => `${pick.season} ${pick.round}.${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` === searched_player.id)
+                        ))
+                    } else {
+                        trades_filtered1 = trades.filter(t =>
+                            t.tips.trade_away.find(
+                                pick => pick.player_id.season + ((pick.player_id.order && parseInt(pick.player_id.season) === parseInt(params.season)) ?
+                                    ` ${pick.player_id.round}.${pick.player_id.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                                    : ` Round ${pick.round}`
+                                ) === searched_player.id
+                            )
+                            ||
+                            t.tips.acquire.find(
+                                pick => pick.player_id.season + ((pick.player_id.order && parseInt(pick.player_id.season) === parseInt(params.season)) ?
+                                    ` ${pick.player_id.round}.${pick.player_id.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                                    : ` Round ${pick.round}`
+                                ) === searched_player.id
+                            )
+                        )
+                    }
                 }
 
 
@@ -290,6 +312,8 @@ const Trades = ({
                     <TradeInfo
                         trade={trade}
                         stateAllPlayers={stateAllPlayers}
+                        stateState={stateState}
+                        state_user={state_user}
                     />
                 )
             }
@@ -297,7 +321,7 @@ const Trades = ({
 
 
 
-    const players_list = [...Array.from(
+    const players_list = Array.from(
         new Set(
             stateTradesFiltered.map(trade => Object.keys(trade.adds || {})).flat()
         )
@@ -311,20 +335,22 @@ const Trades = ({
                 type: 'player'
             }
         }
-    }),
-    ...Array.from(
+    })
+
+    const picks_list = Array.from(
         new Set(
-            stateTradesFiltered.map(trade => trade.draft_picks?.map(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) || []).flat(2)
+            stateTradesFiltered.map(trade => trade.draft_picks?.map(
+                pick => pick.season + ((pick.order && parseInt(pick.season) === parseInt(params.season)) ?
+                    ` ${pick.round}.${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
+                    : ` Round ${pick.round}`
+                )
+            )).flat(2)
         )
     ).map(pick => {
         const pick_split = pick.split('_')
         return {
             id: pick,
-            text: pick_split[0] + (
-                parseInt(pick_split[2]) && pick_split[0] === params.season ?
-                    ` ${pick_split[1]}.${pick_split[2].toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
-                    : ` Round ${pick_split[1]}`
-            ),
+            text: pick,
             image: {
                 src: null,
                 alt: 'pick headshot',
@@ -332,7 +358,7 @@ const Trades = ({
             }
         }
     })
-    ]
+
     const players_list2 = [...Array.from(
         new Set(
             pricecheckTrades[pricecheckPlayer.id]?.map(trade => Object.keys(trade.adds || {})).flat()
@@ -352,7 +378,7 @@ const Trades = ({
         }),
     ...Array.from(
         new Set(
-            pricecheckTrades[pricecheckPlayer.id]?.map(trade => trade.draft_picks?.map(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) || []).flat(2)
+            pricecheckTrades[pricecheckPlayer.id]?.map(trade => trade.draft_picks?.map(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`)).flat(2)
         )
     )
         .map(pick => {
@@ -443,6 +469,7 @@ const Trades = ({
 
     return <>
         <h2>
+            {searched_player.id}
             {tradesDisplay.length.toLocaleString("en-US")}
 
             <select
@@ -483,7 +510,7 @@ const Trades = ({
                     id={'By Player'}
                     sendSearched={(data) => filter === 'Price Check' ? setPricecheckPlayer(data) : setSearched_Player(data)}
                     placeholder={`Player`}
-                    list={players_list}
+                    list={[...players_list, ...picks_list].flat()}
                 />
                 {
                     filter !== 'Price Check' || pricecheckPlayer === '' ? null :

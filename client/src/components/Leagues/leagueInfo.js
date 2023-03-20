@@ -12,7 +12,9 @@ const LeagueInfo = ({
     const [itemActive, setItemActive] = useState('');
     const [secondaryContent, setSecondaryContent] = useState('Lineup')
 
-
+    console.log({
+        league: league
+    })
 
     const active_roster = league.rosters.find(x => x.roster_id === itemActive)
 
@@ -99,7 +101,7 @@ const LeagueInfo = ({
     }
 
     const display = active_roster ?
-        secondaryContent === 'Lineup' ? active_roster?.starters || []
+        secondaryContent === 'Lineup' ? [...active_roster?.starters, ...active_roster?.players.filter(p => !active_roster?.starters.includes(p))] || []
             : secondaryContent === 'QBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'QB') || []
                 : secondaryContent === 'RBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'RB') || []
                     : secondaryContent === 'WRs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'WR') || []
@@ -107,97 +109,115 @@ const LeagueInfo = ({
                             : []
         : []
 
-    const leagueInfo_body = active_roster ? [
-        ...display.map((starter, index) => {
+    const picks_body = active_roster?.draft_picks
+        .sort((a, b) => a.season - b.season || a.round - b.round || a.order - b.order)
+        .map(pick => {
             return {
-                id: starter,
+                id: `${pick.season}_${pick.round}_${pick.original_user.user_id}`,
                 list: [
                     {
-                        text: secondaryContent === 'Lineup' ? (position_abbrev[league.roster_positions[index]] || '-')
-                            : stateAllPlayers[starter]?.position,
-                        colSpan: 5
-                    },
-                    {
-                        text: stateAllPlayers[starter]?.full_name || 'Empty',
-                        colSpan: 12,
-                        className: 'left',
-                        image: {
-                            src: starter,
-                            alt: 'player headshot',
-                            type: 'player'
-                        }
-                    },
-                    {
-                        text: stateAllPlayers[starter]?.age || '-',
-                        colSpan: 5
+                        text: <span>&nbsp;&nbsp;{`${pick.season} Round ${pick.round}${(pick.order && parseInt(league.season) === pick.season) ? `.${pick.order.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : pick.original_user.user_id === active_roster?.user_id ? '' : `(${pick.original_user?.username || 'Orphan'})`}`.toString()}</span>,
+                        colSpan: 22,
+                        className: 'left'
                     }
                 ]
+
             }
         })
-    ]
-        :
-        [
-            {
-                id: 'Type',
-                list: [
-                    {
-                        text: league.settings['type'] === 2 ? 'Dynasty'
-                            : league.settings['type'] === 1 ? 'Keeper'
-                                : 'Redraft',
-                        colSpan: 11
-                    },
-                    {
-                        text: league.settings['best_ball'] === 1 ? 'Bestball' : 'Standard',
-                        colSpan: 11
-                    },
-                ]
-            }, (league.userRoster && {
-                id: 'Trade Deadline',
-                list: [
-                    {
-                        text: 'Trade Deadline',
-                        colSpan: 11
-                    },
-                    {
-                        text: 'Week ' + league.settings['trade_deadline'],
-                        colSpan: 11
+
+    const players_body = display.map((starter, index) => {
+        return {
+            id: starter,
+            list: [
+                {
+                    text: secondaryContent === 'Lineup' ? (position_abbrev[league.roster_positions[index]] || 'BN')
+                        : stateAllPlayers[starter]?.position,
+                    colSpan: 5
+                },
+                {
+                    text: stateAllPlayers[starter]?.full_name || 'Empty',
+                    colSpan: 12,
+                    className: 'left',
+                    image: {
+                        src: starter,
+                        alt: 'player headshot',
+                        type: 'player'
                     }
-                ]
-            }),
-            (league.userRoster && {
-                id: 'Daily Waivers',
-                list: [
-                    {
-                        text: 'Waivers',
-                        colSpan: 11
-                    },
-                    {
-                        text: `${days[league.settings['waiver_day_of_week']]} 
-                                ${league.settings['daily_waivers_hour'] > 12 ? (league.settings['daily_waivers_hour'] - 12) + ' pm' : (league.settings['daily_waivers_hour'] || '12') + 'am'} `,
-                        colSpan: 11
-                    }
-                ]
-            }),
-            ...(scoring_settings
-                && Object.keys(scoring_settings)
-                    .filter(setting => (scoring_settings[setting] !== default_scoring_settings[setting] || scoring_settings_display.includes(setting)))
-                    .map(setting => {
-                        return {
-                            id: setting,
-                            list: [
-                                {
-                                    text: setting,
-                                    colSpan: 11
-                                },
-                                {
-                                    text: scoring_settings[setting].toLocaleString(),
-                                    colSpan: 11
-                                }
-                            ]
+                },
+                {
+                    text: stateAllPlayers[starter]?.age || '-',
+                    colSpan: 5
+                }
+            ]
+        }
+    })
+
+    const leagueInfo_body = active_roster && secondaryContent !== 'Picks' ?
+        players_body
+        : active_roster && secondaryContent === 'Picks' ?
+            picks_body
+            : [
+                {
+                    id: 'Type',
+                    list: [
+                        {
+                            text: league.settings['type'] === 2 ? 'Dynasty'
+                                : league.settings['type'] === 1 ? 'Keeper'
+                                    : 'Redraft',
+                            colSpan: 11
+                        },
+                        {
+                            text: league.settings['best_ball'] === 1 ? 'Bestball' : 'Standard',
+                            colSpan: 11
+                        },
+                    ]
+                }, (league.userRoster && {
+                    id: 'Trade Deadline',
+                    list: [
+                        {
+                            text: 'Trade Deadline',
+                            colSpan: 11
+                        },
+                        {
+                            text: 'Week ' + league.settings['trade_deadline'],
+                            colSpan: 11
                         }
-                    })
-            )
-        ]
+                    ]
+                }),
+                (league.userRoster && {
+                    id: 'Daily Waivers',
+                    list: [
+                        {
+                            text: 'Waivers',
+                            colSpan: 11
+                        },
+                        {
+                            text: `${days[league.settings['waiver_day_of_week']]} 
+                                ${league.settings['daily_waivers_hour'] > 12 ? (league.settings['daily_waivers_hour'] - 12) + ' pm' : (league.settings['daily_waivers_hour'] || '12') + 'am'} `,
+                            colSpan: 11
+                        }
+                    ]
+                }),
+                ...(scoring_settings
+                    && Object.keys(scoring_settings)
+                        .filter(setting => (scoring_settings[setting] !== default_scoring_settings[setting] || scoring_settings_display.includes(setting)))
+                        .map(setting => {
+                            return {
+                                id: setting,
+                                list: [
+                                    {
+                                        text: setting,
+                                        colSpan: 11
+                                    },
+                                    {
+                                        text: scoring_settings[setting].toLocaleString(),
+                                        colSpan: 11
+                                    }
+                                ]
+                            }
+                        })
+                )
+            ]
 
     return <>
         <div className="secondary nav">
@@ -244,6 +264,12 @@ const LeagueInfo = ({
                                 onClick={() => setSecondaryContent('TEs')}
                             >
                                 TEs
+                            </button>
+                            <button
+                                className={secondaryContent === 'Picks' ? 'active click' : 'click'}
+                                onClick={() => setSecondaryContent('Picks')}
+                            >
+                                Picks
                             </button>
                         </>
                         :
