@@ -312,7 +312,7 @@ export const getTradeTips = (trades, leagues, leaguemates, season) => {
                     league.users.includes(lm_user_id) && league.userRoster.user_id !== lm_user_id
                     &&
                     (
-                        league.userRoster?.players?.includes(drop)
+                        league.rosters?.find(r => r.roster_id !== league.userRoster.roster_id && (r.user_id === lm_user_id || r.co_owners?.find(co => co.user_id === lm_user_id)))?.players?.includes(drop)
                         && league.league_id !== trade.league.league_id
 
                     )
