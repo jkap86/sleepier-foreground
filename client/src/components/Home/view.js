@@ -19,6 +19,9 @@ const View = ({
     statePlayerShares,
     stateMatchups,
     stateTrades,
+    setStateTrades,
+    tradesCount,
+    setTradesCount,
     stateLeaguemateIds,
     syncLeague
 }) => {
@@ -96,9 +99,12 @@ const View = ({
                 stateState={stateState}
                 stateAllPlayers={stateAllPlayers}
                 state_user={state_user}
-                propTrades={stateTrades}
+                stateTrades={stateTrades}
+                setStateTrades={setStateTrades}
                 stateLeaguemateIds={stateLeaguemateIds}
                 stateLeagues={stateLeagues}
+                tradesCount={tradesCount}
+                setTradesCount={setTradesCount}
             />
             break;
         default:

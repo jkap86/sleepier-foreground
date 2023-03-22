@@ -31,22 +31,20 @@ export const avatar = (avatar_id, alt, type) => {
 }
 
 export const loadingIcon = (
-    <div>
-        <div className="loading">
-            <img
-                className="loading"
-                src={sleeperlogo}
-                alt={'logo'}
-            />
-            <div className='z_one'>
-                Z
-            </div>
-            <div className='z_two'>
-                Z
-            </div>
-            <div className='z_three'>
-                Z
-            </div>
+    <div className='loading'>
+        <img
+            className="loading"
+            src={sleeperlogo}
+            alt={'logo'}
+        />
+        <div className='z_one'>
+            Z
+        </div>
+        <div className='z_two'>
+            Z
+        </div>
+        <div className='z_three'>
+            Z
         </div>
     </div>
 )

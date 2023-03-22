@@ -15,7 +15,8 @@ const Main = () => {
     const [stateLeaguemates, setStateLeaguemates] = useState([]);
     const [statePlayerShares, setStatePlayerShares] = useState([]);
     const [stateMatchups, setStateMatchups] = useState([]);
-    const [stateTrades, setStateTrades] = useState([]);
+    const [stateTrades, setStateTrades] = useState({});
+    const [tradesCount, setTradesCount] = useState(0)
     const [stateLeaguemateIds, setStateLeaguemateIds] = useState([])
 
 
@@ -49,17 +50,20 @@ const Main = () => {
                     })
                 }).flat(2)
 
-                const trades = await axios.post('/trade/find', {
-                    leaguemate_ids: Object.keys(leaguemates),
-                    user_id: user.data[0]?.user_id.toString()
-                })
+                /*
+                                const trades = await axios.post('/trade/find', {
+                                    leaguemate_ids: Object.keys(leaguemates),
+                                    user_id: user.data[0]?.user_id.toString()
+                                })
+                
+                
+                                const trade_finds = getTradeTips(trades.data, leagues.data, leaguemates, params.season)
+                
+                
+                
+                                setStateTrades(trade_finds)
+                */
 
-
-                const trade_finds = getTradeTips(trades.data, leagues.data, leaguemates, params.season)
-
-
-
-                setStateTrades(trade_finds)
                 setStateLeaguemateIds(leaguemates)
 
                 setStateLeagues(leagues.data)
@@ -99,30 +103,7 @@ const Main = () => {
                 setState_User(user.data)
                 setIsLoading(false)
             }
-            /*
-                        const pc = await axios.get('/trade/rankings')
-            
-                        
-                                  
-                                               const rankings = Object.keys(pc.data.rankings)
-                                                   .filter(player_id => stateAllPlayers[player_id]?.position === 'QB')
-                                                   .sort((a, b) =>
-                                                       pc.data.rankings[b].filter(x => x === a).length - pc.data.rankings[a].filter(x => x === b).length
-                                                       || Array.from(new Set(pc.data.rankings[b])).reduce((acc, cur) => acc + pc.data.rankings[cur].length, 0) - Array.from(new Set(pc.data.rankings[a])).reduce((acc, cur) => acc + pc.data.rankings[cur].length, 0)
-                                                   )
-                                                   .map(player_id => {
-                                                       return {
-                                                           [stateAllPlayers[player_id]?.full_name]: pc.data.rankings[player_id]
-                                                               .filter(player_id2 => stateAllPlayers[player_id2]?.position === 'QB')
-                                                               .map(player_id2 => stateAllPlayers[player_id2]?.full_name)
-                                                               .sort((a, b) => a > b ? 1 : -1)
-                                                       }
-                                                   })
-                                                  
-            
-            
-                        console.log(pc.data)
-             */
+
         }
         fetchLeagues()
     }, [params.username, params.season])
@@ -143,26 +124,26 @@ const Main = () => {
     return <>
         {
             isLoading || !state_user ?
-                <div className="loading">
-                    <h1 className="loading">
-                        {isLoading && loadingIcon}
-                    </h1>
-                </div>
-                : state_user.error ||
-                <React.Suspense fallback={loadingIcon}>
-                    <View
-                        stateState={stateState}
-                        stateAllPlayers={stateAllPlayers}
-                        state_user={state_user}
-                        stateLeagues={stateLeagues}
-                        stateLeaguemates={stateLeaguemates}
-                        statePlayerShares={statePlayerShares}
-                        stateMatchups={stateMatchups}
-                        stateTrades={stateTrades}
-                        stateLeaguemateIds={stateLeaguemateIds}
-                        syncLeague={syncLeague}
-                    />
-                </React.Suspense>
+                isLoading && loadingIcon
+
+                : state_user.error ? <h1>{state_user.error}</h1>
+                    : <React.Suspense fallback={loadingIcon}>
+                        <View
+                            stateState={stateState}
+                            stateAllPlayers={stateAllPlayers}
+                            state_user={state_user}
+                            stateLeagues={stateLeagues}
+                            stateLeaguemates={stateLeaguemates}
+                            statePlayerShares={statePlayerShares}
+                            stateMatchups={stateMatchups}
+                            stateTrades={stateTrades}
+                            setStateTrades={setStateTrades}
+                            tradesCount={tradesCount}
+                            setTradesCount={setTradesCount}
+                            stateLeaguemateIds={stateLeaguemateIds}
+                            syncLeague={syncLeague}
+                        />
+                    </React.Suspense>
 
         }
 

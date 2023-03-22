@@ -50,31 +50,22 @@ exports.find = async (req, res) => {
 
 
         try {
-            const trades_db = await Trades.findAll({
+            const trades_db = await Trades.findAndCountAll({
+                order: [['status_updated', 'DESC']],
+                offset: req.body.offset,
+                limit: req.body.limit,
                 where: {
                     [Op.and]: [
                         {
                             managers: {
                                 [Op.or]: conditions
                             }
-                        },
-                        {
-                            status_updated: {
-                                [Op.gt]: start.toString()
-                            }
-                        },
-                        {
-                            status_updated: {
-                                [Op.lt]: end.toString()
-                            }
                         }
                     ]
                 }
             })
 
-            console.log(`${trades_db.length} TRADES...`)
-
-            res.send(trades_db.map(trade => trade.dataValues))
+            res.send(trades_db)
         } catch (error) {
             console.log(error)
         }

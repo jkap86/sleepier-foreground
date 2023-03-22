@@ -1,4 +1,5 @@
-html {
+html,
+body {
   --color1: rgb(0, 0, 25);
   --color2: #00ceb8;
   --color3: midnightblue;
@@ -13,13 +14,14 @@ html {
   color: white;
 
   overflow-x: hidden;
-  padding-bottom: 25rem;
+
 
 }
 
 .App {
   font-family: 'Ubuntu Mono', sans-serif;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
   margin: auto;
 }
 
@@ -156,6 +158,7 @@ select {
   font-size: inherit;
   padding: 1rem;
   padding-right: 0;
+  margin-bottom: 3rem;
   color: inherit;
   text-align: center;
   font-family: inherit;
@@ -166,27 +169,30 @@ div {
   box-sizing: border-box;
 }
 
+div.loading_wrapper {
+  height: fit-content;
+  display: flex;
+  padding: 2rem;
+}
 
+div.loading {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  width: 90%;
+  height: 100%;
+  margin: auto;
+  padding: auto;
+}
 
-img.loading,
-h1.loading {
-  width: 90rem;
-  height: 90rem;
+img.loading {
+  width: 75rem;
+  height: auto;
   margin: auto;
   vertical-align: middle;
 }
 
-div.loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  display: flex;
-}
+
 
 .z_one,
 .z_two,
@@ -194,10 +200,7 @@ div.loading {
   position: absolute;
   font-size: 10rem;
   color: rgb(0, 195, 255);
-  top: 50%;
-  left: 50%;
-  height: fit-content;
-  z-index: 2;
+
   opacity: 0;
   filter: brightness(2);
   animation-name: snooze;
