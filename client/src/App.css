@@ -14,15 +14,16 @@ body {
   color: white;
 
   overflow-x: hidden;
-
+  width: 100vw;
+  height: 100vh;
 
 }
 
 .App {
   font-family: 'Ubuntu Mono', sans-serif;
-  width: 100vw;
-  height: 100vh;
+
   margin: auto;
+  padding-bottom: 25%;
 }
 
 a {
@@ -182,7 +183,7 @@ div.loading {
   width: 90%;
   height: 100%;
   margin: auto;
-  padding: auto;
+
 }
 
 img.loading {
@@ -190,6 +191,7 @@ img.loading {
   height: auto;
   margin: auto;
   vertical-align: middle;
+  padding: 12.5rem;
 }
 
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { avatar } from '../Functions/misc';
 import './css/search.css';
 
-const Search = ({ id, sendSearched, placeholder, list }) => {
+const Search = ({ id, sendSearched, placeholder, list, tab, isLoading }) => {
     const [searched, setSearched] = useState('')
     const [playerFound, setPlayerFound] = useState('')
     const [dropdownVisible, setDropdownVisible] = useState(false)
@@ -15,6 +15,11 @@ const Search = ({ id, sendSearched, placeholder, list }) => {
     useEffect(() => {
         sendSearched(playerFound)
     }, [playerFound])
+
+    useEffect(() => {
+        setPlayerFound('')
+        setSearched('')
+    }, [tab])
 
     const handleSearch = (input) => {
         let s = input
@@ -63,6 +68,7 @@ const Search = ({ id, sendSearched, placeholder, list }) => {
                 type="text"
                 value={playerFound.text || searched}
                 autoComplete={'off'}
+                disabled={isLoading}
             />
             {
                 searched === '' || !dropdownVisible && (searched !== '' && dropdownVisible) ?
@@ -82,7 +88,7 @@ const Search = ({ id, sendSearched, placeholder, list }) => {
                     </button>
             }
             {
-                dropdownVisible && dropdownOptions.length > 0 ?
+                dropdownVisible && dropdownOptions.length > 0 && !isLoading ?
                     <ol
                         onBlur={() => setDropdownVisible(false)}
                         className="dropdown"

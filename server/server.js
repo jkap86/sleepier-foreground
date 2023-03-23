@@ -14,6 +14,7 @@ function start() {
     const compression = require('compression');
     const path = require('path');
     const cluster = require('cluster');
+    const bodyParser = require('body-parser');
 
     const app = express();
 
@@ -21,7 +22,8 @@ function start() {
     app.use(cors());
     app.use(express.json());
     app.use(express.static(path.resolve(__dirname, '../client/build')));
-
+    app.use(bodyParser.json({ limit: '50mb' }));
+    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
     const db = require("./app/models");
     db.sequelize.sync()

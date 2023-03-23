@@ -16,7 +16,7 @@ const Main = () => {
     const [statePlayerShares, setStatePlayerShares] = useState([]);
     const [stateMatchups, setStateMatchups] = useState([]);
     const [stateTrades, setStateTrades] = useState({});
-    const [tradesCount, setTradesCount] = useState(0)
+    const [stateTradesTips, setStateTradesTips] = useState({});
     const [stateLeaguemateIds, setStateLeaguemateIds] = useState([])
 
 
@@ -138,8 +138,8 @@ const Main = () => {
                             stateMatchups={stateMatchups}
                             stateTrades={stateTrades}
                             setStateTrades={setStateTrades}
-                            tradesCount={tradesCount}
-                            setTradesCount={setTradesCount}
+                            stateTradesTips={stateTradesTips}
+                            setStateTradesTips={setStateTradesTips}
                             stateLeaguemateIds={stateLeaguemateIds}
                             syncLeague={syncLeague}
                         />

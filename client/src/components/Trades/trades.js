@@ -13,8 +13,8 @@ const Trades = ({
     state_user,
     stateTrades,
     setStateTrades,
-    tradesCount,
-    setTradesCount,
+    stateTradesTips,
+    setStateTradesTips,
     stateAllPlayers,
     stateLeaguemateIds,
     stateLeagues
@@ -37,44 +37,100 @@ const Trades = ({
     const [pricecheckPlayer2, setPricecheckPlayer2] = useState('')
     const pageRef = useRef(null)
 
-    const changePage = (page_number) => {
-        setPage(page_number)
-        pageRef.current.focus()
-    }
+    useEffect(() => {
+        setSearched_Player('')
+        setSearched_Manager('')
+        setSearched_League('')
+    }, [filter])
 
     useEffect(() => {
 
         const fetchTrades = async () => {
             setIsLoading(true)
             pageRef.current.focus()
-            const trades = await axios.post('/trade/find', {
-                leaguemate_ids: Object.keys(stateLeaguemateIds),
-                user_id: state_user.user_id,
-                offset: (page - 1) * 25,
-                limit: 500
-            })
 
-            setTradesCount(trades.data.count)
+            let trades;
 
-            const trade_finds = getTradeTips(trades.data.rows, stateLeagues, stateLeaguemateIds, params.season)
+            if (filter === 'All Trades') {
+                if (!stateTrades[Math.ceil(page / 10)] || (!(searched_player === '' && searched_league === '' && searched_manager === '') && !stateTrades.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id && s.manager === searched_manager.id))) {
+                    trades = await axios.post('/trade/find', {
+                        leaguemate_ids: Object.keys(stateLeaguemateIds),
+                        user_id: state_user.user_id,
+                        offset: (page - 1) * 25,
+                        limit: 250,
+                        player: searched_player.id,
+                        manager: searched_manager.id,
+                        league: searched_league.id,
+                        tips: -1
+                    })
 
-            let trades_dict = {}
+                    const trade_finds = getTradeTips(trades.data.rows, stateLeagues, stateLeaguemateIds, params.season)
+
+                    if (searched_player === '' && searched_league === '' && searched_manager === '') {
+                        setStateTrades({
+                            ...stateTrades,
+                            count: trades.data.count,
+                            [Math.ceil(page / 10)]: trade_finds
+                        })
+                    } else {
+                        const searches = stateTrades.searches || []
+                        setStateTrades({
+                            ...stateTrades,
+                            searches: [...searches, {
+                                player: searched_player.id,
+                                league: searched_league.id,
+                                manager: searched_manager.id,
+                                results: trade_finds
+                            }]
+                        })
+                    }
+                } else {
+                    setStateTrades({ ...stateTrades })
+                }
+            } else if (filter === 'Trades with Leads') {
+                if (!stateTradesTips[Math.ceil(page / 10)] || (!(searched_player === '' && searched_league === '') && !stateTradesTips.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id))) {
+                    trades = await axios.post('/trade/find', {
+                        leaguemate_ids: Object.keys(stateLeaguemateIds),
+                        user_id: state_user.user_id,
+                        offset: (page - 1) * 25,
+                        limit: 250,
+                        player: searched_player.id,
+                        manager: searched_manager.id,
+                        league: searched_league.id,
+                        tips: 1
+                    })
+
+                    const trade_finds = getTradeTips(trades.data.rows, stateLeagues, stateLeaguemateIds, params.season)
+
+                    if (searched_player === '' && searched_league === '') {
+                        setStateTradesTips({
+                            ...stateTradesTips,
+                            count: trades.data.count,
+                            [Math.ceil(page / 10)]: trade_finds
+                        })
+                    } else {
+                        const searches = stateTradesTips.searches || []
+                        setStateTradesTips({
+                            ...stateTradesTips,
+                            searches: [...searches, {
+                                player: searched_player.id,
+                                league: searched_league.id,
+                                results: trade_finds
+                            }]
+                        })
+                    }
+                } else {
+                    setStateTradesTips({ ...stateTradesTips })
+                }
 
 
+            }
 
-            setStateTrades({
-                ...stateTrades,
-                [Math.ceil(page / 20)]: trade_finds
-            })
+
             setIsLoading(false)
         }
-        if (!stateTrades[Math.ceil(page / 20)]) {
-            fetchTrades()
-        } else {
-            setStateTrades({ ...stateTrades })
-
-        }
-    }, [params.username, page])
+        fetchTrades()
+    }, [params.username, page, searched_player, searched_league, searched_manager, filter])
 
 
     useEffect(() => {
@@ -88,6 +144,7 @@ const Trades = ({
                 })
                 pcTrades[pricecheckPlayer.id] = player_trades.data
                 setPricecheckTrades({ ...pcTrades })
+
             }
         }
         if (pricecheckPlayer !== '') {
@@ -96,96 +153,9 @@ const Trades = ({
 
     }, [pricecheckPlayer])
 
-
     useEffect(() => {
-        const filterTrades = () => {
-            let trades;
-            if (filter === 'All Trades') {
-                trades = stateTrades[Math.ceil(page / 20)]?.slice(page % 20, (page % 20) + 25) || []
-            } else {
-                trades = stateTrades[Math.ceil(page / 20)].filter(t => t.tips.acquire.length > 0 || t.tips.trade_away.length > 0)
-            }
-
-            let trades_filtered1;
-            let trades_filtered2;
-            let trades_filtered3;
-            if (searched_player === '') {
-                trades_filtered1 = trades
-            } else {
-                if (filter === 'All Trades') {
-                    trades_filtered1 = trades.filter(t => (
-                        Object.keys(t.adds || {}).includes(searched_player.id)
-                        || t.draft_picks.find(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` === searched_player.id)
-                    ))
-                } else {
-                    trades_filtered1 = trades.filter(t =>
-                        t.tips.trade_away.find(
-                            player => parseInt(player.player_id) === parseInt(searched_player.id)
-                        )
-                        ||
-                        t.tips.acquire.find(
-                            player => parseInt(player.player_id) === parseInt(searched_player.id)
-                        )
-                        ||
-                        t.tips.trade_away.find(
-                            pick => pick.player_id.season + ((pick.player_id.order && parseInt(pick.player_id.season) === parseInt(params.season)) ?
-                                ` ${pick.player_id.round}.${pick.player_id.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
-                                : ` Round ${pick.round}`
-                            ) === searched_player.text
-                        )
-                        ||
-                        t.tips.acquire.find(
-                            pick => pick.player_id.season + ((pick.player_id.order && parseInt(pick.player_id.season) === parseInt(params.season)) ?
-                                ` ${pick.player_id.round}.${pick.player_id.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
-                                : ` Round ${pick.round}`
-                            ) === searched_player.text
-                        )
-                    )
-                }
-            }
-
-
-            if (searched_manager === '') {
-                trades_filtered2 = trades_filtered1
-            } else {
-                if (filter === 'Trades with Leads') {
-                    trades_filtered2 = trades_filtered1.filter(t =>
-                        (t.tips.acquire.find(a => a.manager.user_id === searched_manager.id))
-                        || (t.tips.trade_away.find(a => a.manager.user_id === searched_manager.id))
-                    )
-                } else {
-                    trades_filtered2 = trades_filtered1.filter(t => t.managers.find(m => m === searched_manager.id))
-                }
-            }
-
-            if (searched_player2 === '') {
-                trades_filtered3 = trades_filtered2
-            } else {
-                trades_filtered3 = trades_filtered2.filter(t => (
-                    (t.adds || {})[searched_player2.id] && (t.adds || {})[searched_player2.id] !== (t.adds || {})[searched_player.id]
-                    || t.draft_picks.find(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}` === searched_player.id)
-                ))
-            }
-
-            if (searched_league === '') {
-                trades_filtered3 = trades_filtered2
-            } else {
-                if (filter === 'All Trades') {
-                    trades_filtered3 = trades_filtered2.filter(t => t.league.league_id === searched_league.id)
-                } else {
-                    trades_filtered3 = trades_filtered2.filter(t =>
-                        t.tips.acquire.map(add => add.league.league_id).includes(searched_league.id)
-                        || t.tips.trade_away.map(drop => drop.league.league_id).includes(searched_league.id)
-                    )
-                }
-            }
-
-            setStateTradesFiltered([...trades_filtered3])
-
-        }
-
-        filterTrades()
-    }, [stateTrades, searched_player, searched_manager, searched_player2, searched_league, filter])
+        setPage(1)
+    }, [searched_player, searched_league, searched_manager, filter])
 
 
     const trades_headers = [
@@ -201,13 +171,34 @@ const Trades = ({
         ]
     ]
 
-    const tradesDisplay = filter === 'Price Check' ?
-        pricecheckTrades[pricecheckPlayer.id]
-            ?.filter(
-                trade => Object.keys(trade.adds || {}).includes(pricecheckPlayer2.id) || pricecheckPlayer2 === ''
-                    || trade.draft_picks?.find(pick => (`${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) === pricecheckPlayer2.id)
-            ) || []
-        : stateTradesFiltered
+    let tradesDisplay;
+
+    switch (filter) {
+        case 'All Trades':
+            if (searched_player === '' && searched_league === '' && searched_manager === '') {
+                tradesDisplay = stateTrades[Math.ceil(page / 10)]?.slice(((page - 1) % 10) * 25, (((page - 1) % 10) * 25) + 25) || []
+            } else {
+                tradesDisplay = stateTrades.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id && s.manager === searched_manager.id)?.results?.slice(((page - 1) % 10) * 25, (((page - 1) % 10) * 25) + 25) || []
+            }
+            break;
+        case 'Trades with Leads':
+            if (searched_player === '' && searched_league === '' && searched_manager === '') {
+                tradesDisplay = stateTradesTips[Math.ceil(page / 10)]?.slice(((page - 1) % 10) * 25, (((page - 1) % 10) * 25) + 25) || []
+            } else {
+                tradesDisplay = stateTradesTips.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id && s.manager === searched_manager.id)?.results?.slice(((page - 1) % 10) * 25, (((page - 1) % 10) * 25) + 25) || []
+            }
+            break;
+        case 'Price Check':
+            tradesDisplay = pricecheckTrades[pricecheckPlayer.id]
+                ?.filter(
+                    trade => Object.keys(trade.adds || {}).includes(pricecheckPlayer2.id) || pricecheckPlayer2 === ''
+                        || trade.draft_picks?.find(pick => (`${pick.season} ${pick.round}.${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) === pricecheckPlayer2.id)
+                )?.slice(((page - 1) % 10) * 25, (((page - 1) % 10) * 25) + 25) || []
+            break;
+        default:
+            break;
+    }
+
 
     const trades_body = tradesDisplay
         .sort((a, b) => parseInt(b.status_updated) - parseInt(a.status_updated))
@@ -341,7 +332,7 @@ const Trades = ({
 
     const players_list = Array.from(
         new Set(
-            stateTradesFiltered.map(trade => Object.keys(trade.adds || {})).flat()
+            stateLeagues.map(league => league.rosters?.map(roster => roster.players)).flat(3)
         )
     ).map(player_id => {
         return {
@@ -355,27 +346,25 @@ const Trades = ({
         }
     })
 
-    const picks_list = Array.from(
-        new Set(
-            stateTradesFiltered.map(trade => trade.draft_picks?.map(
-                pick => (pick.season + ((pick.order && parseInt(pick.season) === parseInt(params.season)) ?
-                    ` ${pick.round}.${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
-                    : ` Round ${pick.round}`) + ':' + `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
-                )
-            )).flat(2)
-        )
-    ).map(pick => {
-        const pick_split = pick.split(':')
-        return {
-            id: pick_split[1],
-            text: pick_split[0],
-            image: {
-                src: null,
-                alt: 'pick headshot',
-                type: 'player'
-            }
-        }
+    const picks_list = []
+
+    Array.from(Array(3).keys()).map(season => {
+        return Array.from(Array(5).keys()).map(round => {
+            return Array.from(Array(12).keys()).map(order => {
+                return picks_list.push({
+                    id: `${season + parseInt(stateState.league_season)} ${round + 1}.${(order + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 })}`,
+                    text: `${season + parseInt(stateState.league_season)} ${round + 1}.${(order + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 })}`,
+                    image: {
+                        src: null,
+                        alt: 'pick headshot',
+                        type: 'player'
+                    }
+                })
+            })
+        })
     })
+
+
 
     const players_list2 = [...Array.from(
         new Set(
@@ -396,18 +385,14 @@ const Trades = ({
         }),
     ...Array.from(
         new Set(
-            pricecheckTrades[pricecheckPlayer.id]?.map(trade => trade.draft_picks?.map(pick => `${pick.season}_${pick.round}_${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`)).flat(2)
+            pricecheckTrades[pricecheckPlayer.id]?.map(trade => trade.draft_picks?.map(pick => `${pick.season} ${pick.round}.${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`)).flat(2)
         )
     )
         .map(pick => {
             const pick_split = pick.split('_')
             return {
                 id: pick,
-                text: pick_split[0] + (
-                    parseInt(pick_split[2]) && pick_split[0] === params.season ?
-                        ` ${pick_split[1]}.${pick_split[2].toLocaleString("en-US", { minimumIntegerDigits: 2 })}`
-                        : ` Round ${pick_split[1]}`
-                ),
+                text: pick,
                 image: {
                     src: null,
                     alt: 'pick headshot',
@@ -418,58 +403,27 @@ const Trades = ({
         .filter(x => x.text !== pricecheckPlayer.text)
     ]
 
-    let managers_dict = {}
 
-    stateTradesFiltered.map(trade => {
-        return trade.managers.map(manager => {
-            const roster = trade.rosters?.find(r => r.user_id === manager || r.co_owners?.find(co => co.user_id === manager))
-            return managers_dict[roster?.user_id] = {
-                username: roster?.username,
-                avatar: roster?.avatar
-            }
-        })
-    })
 
-    let managers_list = Object.keys(managers_dict).map(user_id => {
+    let managers_list = Object.keys(stateLeaguemateIds).map(user_id => {
         return {
             id: user_id,
-            text: managers_dict[user_id].username,
+            text: stateLeaguemateIds[user_id].username,
             image: {
-                src: managers_dict[user_id].avatar,
+                src: stateLeaguemateIds[user_id].avatar,
                 alt: 'user avatar',
                 type: 'user'
             }
         }
     })
 
-    let managers_dict_tips = {}
 
-    stateTradesFiltered.map(trade => {
-        return [...trade.tips.acquire, ...trade.tips.trade_away].flat().map(tip => {
-            return managers_dict_tips[tip.manager?.user_id] = {
-                username: tip.manager?.username,
-                avatar: tip.manager?.avatar
-            }
-        })
-    })
-
-    let managers_list_tips = Object.keys(managers_dict_tips).map(user_id => {
-        return {
-            id: user_id,
-            text: managers_dict_tips[user_id].username,
-            image: {
-                src: managers_dict_tips[user_id].avatar,
-                alt: 'user avatar',
-                type: 'user'
-            }
-        }
-    })
 
     let leagues_list = {}
 
-    stateTradesFiltered
+    tradesDisplay
         .map(trade => {
-            if (filter === 'All Trades') {
+            if (filter !== 'Trades with Leads') {
                 leagues_list[trade.league.league_id] = {
                     id: trade.league.league_id,
                     text: trade.league.name,
@@ -507,9 +461,31 @@ const Trades = ({
 
     leagues_list = Object.values(leagues_list)
 
+    let tradeCount;
+
+    if (filter === 'All Trades') {
+        if (searched_league === '' && searched_manager === '' && searched_player === '') {
+            tradeCount = stateTrades.count
+        } else {
+            tradeCount = stateTrades.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id && s.manager === searched_manager.id)?.results?.length
+        }
+    } else if (filter === 'Trades with Leads') {
+        if (searched_league === '' && searched_manager === '' && searched_player === '') {
+            tradeCount = stateTradesTips.count
+        } else {
+            tradeCount = stateTradesTips.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id && s.manager === searched_manager.id)?.results?.length || 0
+        }
+    } else if (filter === 'Price Check') {
+        tradeCount = pricecheckTrades[pricecheckPlayer.id]
+            ?.filter(
+                trade => Object.keys(trade.adds || {}).includes(pricecheckPlayer2.id) || pricecheckPlayer2 === ''
+                    || trade.draft_picks?.find(pick => (`${pick.season} ${pick.round}.${pick.order?.toLocaleString("en-US", { minimumIntegerDigits: 2 })}`) === pricecheckPlayer2.id)
+            )?.length || 0
+    }
+
     return <>
         <h2>
-            {tradesCount.toLocaleString("en-US")}
+            {tradeCount?.toLocaleString("en-US")}
             {` ${params.season} Trades`}
 
         </h2>
@@ -518,6 +494,7 @@ const Trades = ({
             className='trades'
             onChange={(e) => setFilter(e.target.value)}
             value={filter}
+            disabled={isLoading}
         >
             <option>All Trades</option>
             <option>Trades with Leads</option>
@@ -532,7 +509,8 @@ const Trades = ({
                             id={'By Manager'}
                             sendSearched={(data) => setSearched_Manager(data)}
                             placeholder={`Manager`}
-                            list={filter === 'Trades with Leads' ? managers_list_tips : managers_list}
+                            list={managers_list}
+                            tab={filter}
                         />
                 }
                 <Search
@@ -540,6 +518,7 @@ const Trades = ({
                     sendSearched={(data) => filter === 'Price Check' ? setPricecheckPlayer(data) : setSearched_Player(data)}
                     placeholder={`Player`}
                     list={[...players_list, ...picks_list].flat()}
+                    tab={filter}
                 />
                 {
                     filter !== 'Price Check' || pricecheckPlayer === '' ? null :
@@ -561,6 +540,7 @@ const Trades = ({
                             sendSearched={(data) => setSearched_League(data)}
                             placeholder={`League`}
                             list={leagues_list}
+                            tab={filter}
                         />
                     </div>
                     : null
@@ -579,9 +559,9 @@ const Trades = ({
         <div className="page_numbers_wrapper" ref={pageRef}>
             <>
                 {
-                    (Math.ceil(tradesCount / 25) <= 1) ? null :
+                    (Math.ceil((tradeCount || 0) / 25) <= 1) ? null :
                         <ol className="page_numbers">
-                            {Array.from(Array(Math.ceil(tradesCount / 25)).keys()).map(page_number =>
+                            {Array.from(Array(Math.ceil(tradeCount / 25)).keys()).map(page_number =>
                                 <li className={page === page_number + 1 ? 'active click' : 'click'} key={page_number + 1} onClick={() => setPage(page_number + 1)} >
                                     {page_number + 1}
                                 </li>

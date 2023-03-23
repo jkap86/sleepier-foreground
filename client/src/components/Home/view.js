@@ -20,8 +20,8 @@ const View = ({
     stateMatchups,
     stateTrades,
     setStateTrades,
-    tradesCount,
-    setTradesCount,
+    stateTradesTips,
+    setStateTradesTips,
     stateLeaguemateIds,
     syncLeague
 }) => {
@@ -101,10 +101,10 @@ const View = ({
                 state_user={state_user}
                 stateTrades={stateTrades}
                 setStateTrades={setStateTrades}
+                stateTradesTips={stateTradesTips}
+                setStateTradesTips={setStateTradesTips}
                 stateLeaguemateIds={stateLeaguemateIds}
                 stateLeagues={stateLeagues}
-                tradesCount={tradesCount}
-                setTradesCount={setTradesCount}
             />
             break;
         default:

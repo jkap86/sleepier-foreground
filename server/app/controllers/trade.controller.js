@@ -1,6 +1,7 @@
 'use strict'
 const db = require("../models");
 const Trades = db.trades;
+const League = db.leagues;
 const Op = db.Sequelize.Op;
 const https = require('https');
 const axios = require('axios').create({
@@ -19,6 +20,7 @@ const TradeCache = new NodeCache;
 exports.find = async (req, res) => {
 
     if (req.body.leaguemate_ids.length > 0) {
+
         let conditions = []
 
         for (let lm of req.body.leaguemate_ids) {
@@ -26,8 +28,101 @@ exports.find = async (req, res) => {
                 [Op.contains]: lm
             })
         }
+        let filters = []
+        if (req.body.player) {
+            const pick_split = req.body.player.split(' ')
+            const season = pick_split[0]
+            const round = parseInt(pick_split[1]?.split('.')[0])
+            const order = parseInt(pick_split[1]?.split('.')[1])
 
 
+            filters.push({
+                [Op.or]: [
+                    {
+                        adds: {
+                            [req.body.player]: {
+                                [Op.not]: null
+                            }
+                        }
+                    },
+                    {
+                        draft_picks: {
+                            [Op.contains]: [{
+                                season: season,
+                                round: round,
+                                order: order
+                            }]
+                        }
+                    }
+                ]
+            })
+        }
+        if (req.body.league) {
+            filters.push({
+                league: {
+                    league_id: req.body.league
+                }
+            })
+        }
+        if (req.body.manager) {
+            filters.push({
+                managers: {
+                    [Op.contains]: [req.body.manager]
+                }
+            })
+        }
+
+        let adds = []
+        let players = []
+
+        if (parseInt(req.body.tips) === 1) {
+            let leagues = await League.findAll({
+                attributes: ['league_id', 'rosters'],
+                where: {
+                    users: {
+                        [Op.contains]: [req.body.user_id]
+                    }
+                }
+            })
+
+
+
+            leagues.map(league => {
+                return league.dataValues.rosters
+                    ?.map(r => {
+                        return r.players?.map(player_id => {
+                            return players.push(player_id)
+                        })
+                    })
+            })
+
+
+
+
+
+            Array.from(new Set(players)).map(player_id => {
+                const lms = []
+                leagues.map(league => {
+                    const lm = league.dataValues.rosters.find(r => r.players?.includes(player_id))
+                    if (lm) {
+                        lms.push(lm.user_id)
+                    }
+                })
+
+                return adds.push({
+                    [player_id]: {
+                        [Op.in]: lms
+                    }
+
+                })
+            })
+
+            filters.push({
+                drops: {
+                    [Op.or]: adds
+                }
+            })
+        }
 
         let now = new Date()
 
@@ -60,7 +155,8 @@ exports.find = async (req, res) => {
                             managers: {
                                 [Op.or]: conditions
                             }
-                        }
+                        },
+                        filters
                     ]
                 }
             })
@@ -76,23 +172,32 @@ exports.find = async (req, res) => {
 
 
 exports.pricecheck = async (req, res) => {
-    console.log({ PLAYER_ID: req.body.player_id })
+    const pick_split = req.body.player_id.split(' ')
+    const season = pick_split[0]
+    const round = parseInt(pick_split[1]?.split('.')[0])
+    const order = parseInt(pick_split[1]?.split('.')[1])
+
 
     let alltrades;
     try {
         alltrades = await Trades.findAll({
+            order: [['status_updated', 'DESC']],
             where: {
                 [Op.or]: [
-                    {
-                        draft_picks: {
-                            [Op.contains]: [{ season: req.body.player_id.split("_")[0], round: parseInt(req.body.player_id.split("_")[1]), order: parseInt(req.body.player_id.split("_")[2]) }]
-                        }
-                    },
                     {
                         adds: {
                             [req.body.player_id]: {
                                 [Op.not]: null
                             }
+                        }
+                    },
+                    {
+                        draft_picks: {
+                            [Op.contains]: [{
+                                season: season,
+                                round: round,
+                                order: order
+                            }]
                         }
                     }
                 ]
@@ -105,9 +210,9 @@ exports.pricecheck = async (req, res) => {
         .map(trade => trade.dataValues)
         .filter(trade => {
             const query_pick = trade.draft_picks.find(
-                pick => pick.season === req.body.player_id.split("_")[0]
-                    && pick.round === parseInt(req.body.player_id.split("_")[1])
-                    && pick.order === parseInt(req.body.player_id.split("_")[2])
+                pick => pick.season === season
+                    && pick.round === round
+                    && pick.order === order
             )
             return (
                 Object.values(trade.adds).filter(x => x === trade.adds[req.body.player_id]).length === 1
