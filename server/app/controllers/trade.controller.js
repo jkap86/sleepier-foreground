@@ -214,9 +214,9 @@ exports.pricecheck = async (req, res) => {
         .map(trade => trade.dataValues)
         .filter(trade => {
             const query_pick = trade.draft_picks.find(
-                pick => pick.season === req.body.player_id.split("_")[0]
-                    && pick.round === parseInt(req.body.player_id.split("_")[1])
-                    && pick.order === parseInt(req.body.player_id.split("_")[2])
+                pick => pick.season === season
+                    && pick.round === round
+                    && pick.order === order
             )
             return (
                 Object.values(trade.adds).filter(x => x === trade.adds[req.body.player_id]).length === 1
