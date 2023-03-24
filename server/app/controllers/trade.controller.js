@@ -238,7 +238,7 @@ exports.pricecheck = async (req, res) => {
             const query_pick = trade.draft_picks.find(
                 pick => pick.season === season
                     && pick.round === round
-                    && pick.order === order
+                    && (pick.order === order || !pick.order)
             )
             return (
                 Object.values(trade.adds).filter(x => x === trade.adds[req.body.player_id]).length === 1

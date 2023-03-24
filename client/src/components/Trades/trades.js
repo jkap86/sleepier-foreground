@@ -350,19 +350,31 @@ const Trades = ({
 
     const picks_list = []
 
-    Array.from(Array(3).keys()).map(season => {
+    Array.from(Array(4).keys()).map(season => {
         return Array.from(Array(5).keys()).map(round => {
-            return Array.from(Array(12).keys()).map(order => {
+            if (season !== 0) {
                 return picks_list.push({
-                    id: `${season + parseInt(stateState.league_season)} ${round + 1}.${(order + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 })}`,
-                    text: `${season + parseInt(stateState.league_season)} ${round + 1}.${(order + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 })}`,
+                    id: `${season + parseInt(stateState.league_season)} ${round + 1}.${null}`,
+                    text: `${season + parseInt(stateState.league_season)}  Round ${round + 1}`,
                     image: {
                         src: null,
                         alt: 'pick headshot',
                         type: 'player'
                     }
                 })
-            })
+            } else {
+                return Array.from(Array(12).keys()).map(order => {
+                    return picks_list.push({
+                        id: `${season + parseInt(stateState.league_season)} ${round + 1}.${season === 0 ? (order + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 }) : null}`,
+                        text: `${season + parseInt(stateState.league_season)} ${season === 0 ? `${round + 1}.${(order + 1).toLocaleString("en-US", { minimumIntegerDigits: 2 })}` : ` Round ${round + 1}`}`,
+                        image: {
+                            src: null,
+                            alt: 'pick headshot',
+                            type: 'player'
+                        }
+                    })
+                })
+            }
         })
     })
 
