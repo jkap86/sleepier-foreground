@@ -31,7 +31,7 @@ const Trades = ({
     const [searched_player, setSearched_Player] = useState('')
     const [searched_player2, setSearched_Player2] = useState('')
     const [searched_league, setSearched_League] = useState('')
-    const [filter, setFilter] = useState('All Trades')
+    const [filter, setFilter] = useState('Price Check')
     const [pricecheckTrades, setPricecheckTrades] = useState({})
     const [pricecheckPlayer, setPricecheckPlayer] = useState('')
     const [pricecheckPlayer2, setPricecheckPlayer2] = useState('')
@@ -51,7 +51,7 @@ const Trades = ({
 
             let trades;
 
-            if (filter === 'All Trades') {
+            if (filter === 'Leaguemate Trades') {
                 if (!stateTrades[Math.ceil(page / 10)] || (!(searched_player === '' && searched_league === '' && searched_manager === '') && !stateTrades.searches?.find(s => s.player === searched_player.id && s.league === searched_league.id && s.manager === searched_manager.id))) {
                     trades = await axios.post('/trade/find', {
                         leaguemate_ids: Object.keys(stateLeaguemateIds),
@@ -176,7 +176,7 @@ const Trades = ({
     let tradesDisplay;
 
     switch (filter) {
-        case 'All Trades':
+        case 'Leaguemate Trades':
             if (searched_player === '' && searched_league === '' && searched_manager === '') {
                 tradesDisplay = stateTrades[Math.ceil(page / 10)]?.slice(((page - 1) % 10) * 25, (((page - 1) % 10) * 25) + 25) || []
             } else {
@@ -477,7 +477,7 @@ const Trades = ({
 
     let tradeCount;
 
-    if (filter === 'All Trades') {
+    if (filter === 'Leaguemate Trades') {
         if (searched_league === '' && searched_manager === '' && searched_player === '') {
             tradeCount = stateTrades.count
         } else {
@@ -510,8 +510,8 @@ const Trades = ({
             value={filter}
             disabled={isLoading}
         >
-            <option>All Trades</option>
             <option>Price Check</option>
+            <option>Leaguemate Trades</option>
         </select>
         <div className="trade_search_wrapper">
             <div>
@@ -545,7 +545,7 @@ const Trades = ({
 
             </div>
             {
-                ['All Trades', 'Trades with Leads'].includes(filter) ?
+                ['Leaguemate Trades', 'Trades with Leads'].includes(filter) ?
                     <div>
 
                         <Search
