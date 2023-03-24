@@ -97,8 +97,6 @@ exports.find = async (req, res) => {
                     })
             })
 
-            console.log({ players: players.slice(0, 5) })
-
 
             let tips = []
 

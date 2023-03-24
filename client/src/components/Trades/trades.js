@@ -499,7 +499,6 @@ const Trades = ({
             disabled={isLoading}
         >
             <option>All Trades</option>
-            <option>Trades with Leads</option>
             <option>Price Check</option>
         </select>
         <div className="trade_search_wrapper">
