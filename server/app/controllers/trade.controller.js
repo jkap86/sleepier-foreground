@@ -21,13 +21,9 @@ exports.find = async (req, res) => {
 
     if (req.body.leaguemate_ids.length > 0) {
 
-        let conditions = []
 
-        for (let lm of req.body.leaguemate_ids) {
-            conditions.push({
-                [Op.contains]: lm
-            })
-        }
+
+
         let filters = []
         if (req.body.player) {
             const pick_split = req.body.player.split(' ')
@@ -35,6 +31,11 @@ exports.find = async (req, res) => {
             const round = parseInt(pick_split[1]?.split('.')[0])
             const order = parseInt(pick_split[1]?.split('.')[1])
 
+            console.log({
+                season: season,
+                round: round,
+                order: order
+            })
 
             filters.push({
                 [Op.or]: [
@@ -96,7 +97,7 @@ exports.find = async (req, res) => {
                     })
             })
 
-
+            console.log({ players: players.slice(0, 5) })
 
 
 
@@ -148,19 +149,19 @@ exports.find = async (req, res) => {
             const trades_db = await Trades.findAndCountAll({
                 order: [['status_updated', 'DESC']],
                 offset: req.body.offset,
-                limit: req.body.limit,
+                limit: 500,
                 where: {
                     [Op.and]: [
                         {
                             managers: {
-                                [Op.or]: conditions
+                                [Op.overlap]: req.body.leaguemate_ids
                             }
                         },
                         filters
                     ]
                 }
             })
-
+            console.log(`${trades_db.count} TRADES...`)
             res.send(trades_db)
         } catch (error) {
             console.log(error)
@@ -177,20 +178,16 @@ exports.pricecheck = async (req, res) => {
     const round = parseInt(pick_split[1]?.split('.')[0])
     const order = parseInt(pick_split[1]?.split('.')[1])
 
-
+    console.log({
+        season: season,
+        round: round,
+        order: order
+    })
     let alltrades;
     try {
         alltrades = await Trades.findAll({
-            order: [['status_updated', 'DESC']],
             where: {
                 [Op.or]: [
-                    {
-                        adds: {
-                            [req.body.player_id]: {
-                                [Op.not]: null
-                            }
-                        }
-                    },
                     {
                         draft_picks: {
                             [Op.contains]: [{
@@ -198,6 +195,13 @@ exports.pricecheck = async (req, res) => {
                                 round: round,
                                 order: order
                             }]
+                        }
+                    },
+                    {
+                        adds: {
+                            [req.body.player_id]: {
+                                [Op.not]: null
+                            }
                         }
                     }
                 ]
@@ -210,9 +214,9 @@ exports.pricecheck = async (req, res) => {
         .map(trade => trade.dataValues)
         .filter(trade => {
             const query_pick = trade.draft_picks.find(
-                pick => pick.season === season
-                    && pick.round === round
-                    && pick.order === order
+                pick => pick.season === req.body.player_id.split("_")[0]
+                    && pick.round === parseInt(req.body.player_id.split("_")[1])
+                    && pick.order === parseInt(req.body.player_id.split("_")[2])
             )
             return (
                 Object.values(trade.adds).filter(x => x === trade.adds[req.body.player_id]).length === 1

@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         managers: {
-            type: Sequelize.JSONB
+            type: DataTypes.ARRAY(DataTypes.STRING)
         },
         adds: {
             type: Sequelize.JSONB
