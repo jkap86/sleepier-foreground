@@ -73,12 +73,12 @@ exports.find = async (req, res) => {
             })
         }
 
-        let adds = []
+
         let players = []
 
         if (parseInt(req.body.tips) === 1) {
             let leagues = await League.findAll({
-                attributes: ['league_id', 'rosters'],
+                attributes: ['league_id', 'users', 'rosters'],
                 where: {
                     users: {
                         [Op.contains]: [req.body.user_id]
@@ -100,29 +100,53 @@ exports.find = async (req, res) => {
             console.log({ players: players.slice(0, 5) })
 
 
+            let tips = []
 
             Array.from(new Set(players)).map(player_id => {
-                const lms = []
-                leagues.map(league => {
-                    const lm = league.dataValues.rosters.find(r => r.players?.includes(player_id))
-                    if (lm) {
-                        lms.push(lm.user_id)
-                    }
+                let adds = []
+                let drops = []
+                leagues
+                    .filter(l => l.dataValues.rosters?.find(r => r.user_id === req.body.user_id || r.co_owners?.find(co => co?.user_id === req.body.user_id))?.players?.length > 0)
+                    .map(l => {
+                        const userRoster = l.dataValues.rosters?.find(r => r.user_id === req.body.user_id || r.co_owners?.find(co => co?.user_id === req.body.user_id))
+                        if (userRoster?.players?.includes(player_id)) {
+                            return l.dataValues.users
+                                .filter(u => u !== req.body.user_id)
+                                .map(u => {
+                                    return adds.push(u)
+                                })
+                        } else {
+                            const lmRoster = l.dataValues.rosters?.find(r => r?.players?.includes(player_id))
+                            if (lmRoster?.user_id) {
+                                return drops.push(lmRoster?.user_id)
+                            }
+                        }
+                    })
+
+                tips.push({
+                    [Op.or]: [
+                        {
+                            adds: {
+                                [player_id]: {
+                                    [Op.in]: adds.flat()
+                                }
+                            }
+                        },
+                        {
+                            drops: {
+                                [player_id]: {
+                                    [Op.in]: drops.flat()
+                                }
+                            }
+                        }
+                    ]
                 })
 
-                return adds.push({
-                    [player_id]: {
-                        [Op.in]: lms
-                    }
-
-                })
             })
-
             filters.push({
-                drops: {
-                    [Op.or]: adds
-                }
+                [Op.or]: tips
             })
+
         }
 
         let now = new Date()

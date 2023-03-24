@@ -136,15 +136,17 @@ const Trades = ({
     useEffect(() => {
 
         const fetchPlayerTrades = async () => {
+
             let pcTrades = pricecheckTrades
 
             if (!pcTrades[pricecheckPlayer.id]) {
+                setIsLoading(true)
                 const player_trades = await axios.post('/trade/pricecheck', {
                     player_id: pricecheckPlayer.id
                 })
                 pcTrades[pricecheckPlayer.id] = player_trades.data
                 setPricecheckTrades({ ...pcTrades })
-
+                setIsLoading(false)
             }
         }
         if (pricecheckPlayer !== '') {
