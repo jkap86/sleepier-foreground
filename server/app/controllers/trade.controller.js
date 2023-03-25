@@ -83,7 +83,10 @@ exports.find = async (req, res) => {
                     users: {
                         [Op.contains]: [req.body.user_id]
                     }
-                }
+                },
+                indexHints: [
+                    { type: 'USE', values: ['idx_users'] }
+                ]
             })
 
 
@@ -181,7 +184,10 @@ exports.find = async (req, res) => {
                         },
                         filters
                     ]
-                }
+                },
+                indexHints: [
+                    { type: 'USE', values: ['idx_managers'] }
+                ]
             })
             console.log(`${trades_db.count} TRADES...`)
             res.send(trades_db)

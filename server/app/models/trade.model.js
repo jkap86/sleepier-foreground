@@ -36,6 +36,13 @@ module.exports = (sequelize, Sequelize) => {
         drafts: {
             type: Sequelize.JSONB
         }
+    }, {
+        indexes: [
+            {
+                name: 'idx_managers',
+                fields: ['managers']
+            }
+        ]
     });
 
     return Trade;

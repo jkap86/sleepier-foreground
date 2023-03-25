@@ -43,6 +43,13 @@ module.exports = (sequelize, Sequelize) => {
         ...Object.fromEntries(Array.from(Array(18).keys()).map(key => {
             return [`matchups_${key + 1}`, { type: Sequelize.JSONB }]
         }))
+    }, {
+        indexes: [
+            {
+                name: 'idx_users',
+                fields: ['users']
+            }
+        ]
     });
 
     return League;
