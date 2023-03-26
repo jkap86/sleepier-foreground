@@ -101,7 +101,8 @@ exports.find = async (req, res) => {
             })
 
 
-            let tips = []
+            let tips_adds = []
+            let tips_drops = []
 
             Array.from(new Set(players)).map(player_id => {
                 let adds = []
@@ -114,38 +115,32 @@ exports.find = async (req, res) => {
                             return l.dataValues.users
                                 .filter(u => u !== req.body.user_id)
                                 .map(u => {
-                                    return adds.push(u)
+                                    return tips_adds.push({ [player_id]: u })
                                 })
                         } else {
                             const lmRoster = l.dataValues.rosters?.find(r => r?.players?.includes(player_id))
                             if (lmRoster?.user_id) {
-                                return drops.push(lmRoster?.user_id)
+                                return tips_drops.push({ [player_id]: lmRoster?.user_id })
                             }
                         }
                     })
 
-                tips.push({
-                    [Op.or]: [
-                        {
-                            adds: {
-                                [player_id]: {
-                                    [Op.in]: adds.flat()
-                                }
-                            }
-                        },
-                        {
-                            drops: {
-                                [player_id]: {
-                                    [Op.in]: drops.flat()
-                                }
-                            }
-                        }
-                    ]
-                })
+
 
             })
             filters.push({
-                [Op.or]: tips
+                [Op.or]: [
+                    {
+                        adds: {
+                            [Op.overlap]: tips_adds
+                        }
+                    },
+                    {
+                        drops: {
+                            [Op.overlap]: tips_drops
+                        }
+                    }
+                ]
             })
 
         }
