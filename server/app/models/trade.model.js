@@ -40,7 +40,7 @@ module.exports = (sequelize, Sequelize) => {
         indexes: [
             {
                 name: 'idx_managers',
-                fields: ['managers']
+                fields: ['managers', 'adds', 'drops']
             }
         ]
     });

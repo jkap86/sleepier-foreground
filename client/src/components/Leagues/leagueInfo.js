@@ -100,8 +100,8 @@ const LeagueInfo = ({
         'REC_FLEX': 'W T'
     }
 
-    const display = active_roster ?
-        secondaryContent === 'Lineup' ? [...active_roster?.starters, ...active_roster?.players.filter(p => !active_roster?.starters.includes(p))] || []
+    const display = active_roster?.players ?
+        secondaryContent === 'Lineup' ? [...active_roster?.starters, ...active_roster?.players?.filter(p => !active_roster?.starters?.includes(p))] || []
             : secondaryContent === 'QBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'QB') || []
                 : secondaryContent === 'RBs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'RB') || []
                     : secondaryContent === 'WRs' ? active_roster?.players?.filter(x => stateAllPlayers[x]?.position === 'WR') || []
