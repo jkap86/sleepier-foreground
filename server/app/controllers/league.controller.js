@@ -74,7 +74,9 @@ exports.create = async (req, res, app) => {
 exports.draft = async (req, res, app) => {
     const league = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}`)
     const league_drafts = await axios.get(`https://api.sleeper.app/v1/league/${req.body.league_id}/drafts`)
-    const active_draft = league_drafts.data?.find(d => d.settings.slots_k > 0)
+    const active_draft = league_drafts.data?.find(d => d.settings.slots_k > 0 && d.settings.rounds > league.data.settings.draft_rounds)
+
+    console.log({ active_draft: active_draft })
 
     if (active_draft) {
         const allplayers = app.get('allplayers')
@@ -90,6 +92,11 @@ exports.draft = async (req, res, app) => {
                 picked_by: users.data.find(u => u.user_id === pick.picked_by)?.display_name,
                 picked_by_avatar: users.data.find(u => u.user_id === pick.picked_by)?.avatar
             }
+        })
+
+        console.log({
+            league: league.data,
+            picks: picktracker
         })
 
         res.send({
