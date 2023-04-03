@@ -169,7 +169,7 @@ exports.find = async (req, res) => {
             const trades_db = await Trades.findAndCountAll({
                 order: [['status_updated', 'DESC']],
                 offset: req.body.offset,
-                limit: 500,
+                limit: 250,
                 where: {
                     [Op.and]: [
                         {
